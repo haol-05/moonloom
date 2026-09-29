@@ -1,0 +1,19 @@
+// The query language front end: tokens, syntax tree, and the parser.
+//
+// The language is a pipeline. A query names a source and then a chain of
+// stages, each of which feeds the next:
+//
+//   from app.log
+//     | where level == "error"
+//     | stats count() as n, avg(duration) as mean by service
+//     | sort n desc
+//     | limit 5
+//
+// Parsing is separate from execution: this package only produces a syntax tree
+// and reports where a mistake is, which keeps the planner and the executor free
+// of character level concerns.
+import {
+  "haol-05/moonloom" @moonloom,
+  "haol-05/moonloom/ascii" @ascii,
+  "moonbitlang/core/debug",
+}
