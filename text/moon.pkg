@@ -1,0 +1,13 @@
+// Text ingestion: turning semi-structured bytes into records.
+//
+// Every parser in this package follows the same contract: it returns a
+// `@moonloom.Dataset`, it never raises, and a line it cannot read becomes a
+// diagnostic instead of an error. That is what lets one query run over a log
+// file with a few broken lines.
+import {
+  "haol-05/moonloom" @moonloom,
+  "haol-05/moonloom/ascii" @ascii,
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+}
