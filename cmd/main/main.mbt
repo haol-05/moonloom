@@ -69,9 +69,12 @@ fn default_options() -> Options {
 }
 
 ///|
-/// Reads the arguments. Returns `None` when a value is missing for an option
-/// that needs one, so the caller can report it instead of guessing.
-fn parse_args(args : Array[String]) -> Options? {
+/// Reads the arguments.
+///
+/// A mistake comes back as a message rather than a silent guess: an option
+/// without its value, a count that is not a number, or a second bare word,
+/// which is what a query split by the shell looks like.
+fn parse_args(args : Array[String]) -> Result[Options, String] {
   let options = default_options()
   let mut index = 0
   if args.length() > 0 {
@@ -83,39 +86,40 @@ fn parse_args(args : Array[String]) -> Options? {
     match argument {
       "--file" => {
         if index + 1 >= args.length() {
-          return None
+          return Err("--file needs a path")
         }
         options.file = Some(args[index + 1])
         index += 2
       }
       "--text" => {
         if index + 1 >= args.length() {
-          return None
+          return Err("--text needs a value")
         }
         options.text = Some(args[index + 1])
         index += 2
       }
       "--format" => {
         if index + 1 >= args.length() {
-          return None
+          return Err("--format needs a name")
         }
         options.format = args[index + 1]
         index += 2
       }
       "--output" => {
         if index + 1 >= args.length() {
-          return None
+          return Err("--output needs a name")
         }
         options.output = args[index + 1]
         index += 2
       }
       "--limit" => {
         if index + 1 >= args.length() {
-          return None
+          return Err("--limit needs a count")
         }
         match @moonloom.parse_int_opt(args[index + 1]) {
           Some(value) => options.limit = value
-          None => return None
+          None =>
+            return Err("--limit needs a count, found '" + args[index + 1] + "'")
         }
         index += 2
       }
@@ -136,17 +140,26 @@ fn parse_args(args : Array[String]) -> Options? {
         index += 1
       }
       _ => {
-        // The first bare word after the command is the query; anything else
-        // that starts with a dash is a mistake worth reporting.
+        // The first bare word after the command is the query. A second one
+        // means the shell split the query, so say so instead of quietly
+        // running a fragment of it.
         if argument.has_prefix("--") {
-          return None
+          return Err("unknown option '" + argument + "'")
         }
-        options.query = Some(argument)
+        match options.query {
+          Some(_) =>
+            return Err(
+              "unexpected extra argument '" +
+              argument +
+              "'; quote the whole query as one argument",
+            )
+          None => options.query = Some(argument)
+        }
         index += 1
       }
     }
   }
-  Some(options)
+  Ok(options)
 }
 
 ///|
@@ -167,8 +180,6 @@ fn read_source(options : Options) -> Result[String, String] {
       }
   }
 }
-
-///|
 
 ///|
 /// Prints rendered output without adding a blank line when the rendering
@@ -214,8 +225,9 @@ fn main {
   let args = @env.args()
   let rest = command_arguments(args)
   let options = match parse_args(rest) {
-    Some(parsed) => parsed
-    None => {
+    Ok(parsed) => parsed
+    Err(message) => {
+      println("moonloom: " + message)
       println(USAGE)
       @sys.exit(1)
       return
@@ -237,7 +249,7 @@ fn main {
 }
 
 ///|
-const VERSION : String = "0.1.0"
+const VERSION : String = "0.1.1"
 
 ///|
 fn print_formats() -> Unit {
