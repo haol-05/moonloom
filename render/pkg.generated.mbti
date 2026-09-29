@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/render"
+
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/exec",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn char_width(Char) -> Int
+
+pub fn display_width(String) -> Int
+
+pub fn known_formats() -> Array[String]
+
+pub fn render(@exec.ResultSet, String) -> String
+
+pub fn render_csv(@exec.ResultSet, delimiter? : Char) -> String
+
+pub fn render_json(@exec.ResultSet) -> String
+
+pub fn render_jsonl(@exec.ResultSet) -> String
+
+pub fn render_markdown(@exec.ResultSet) -> String
+
+pub fn render_schema(Array[@moonloom.FieldInfo]) -> String
+
+pub fn render_stats(@exec.ExecStats) -> String
+
+pub fn render_table(@exec.ResultSet, options? : TableOptions) -> String
+
+pub fn truncate_width(String, Int) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct TableOptions {
+  max_cell_width : Int
+  row_numbers : Bool
+  float_digits : Int
+} derive(Eq, @debug.Debug)
+pub fn TableOptions::equal(Self, Self) -> Bool
+pub fn TableOptions::new(max_cell_width? : Int, row_numbers? : Bool, float_digits? : Int) -> Self
+pub fn TableOptions::not_equal(Self, Self) -> Bool
+pub fn TableOptions::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

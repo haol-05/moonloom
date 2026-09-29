@@ -1,0 +1,17 @@
+// Rendering a result for a human or for another program.
+//
+// The table renderer pads by display width rather than by character count, so a
+// column of Chinese text lines up with a column of ASCII text. The width table
+// is a compact approximation of the East Asian Width property: it covers the
+// ranges that appear in logs and reports, and it is documented as an
+// approximation rather than as the full property.
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/exec",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/math",
+}
+
+import {
+  "haol-05/moonloom/text",
+} for "test"
