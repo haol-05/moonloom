@@ -23,3 +23,7 @@ keywords = [
 ]
 
 preferred_target = "wasm"
+
+import {
+  "moonbitlang/x@0.5.5",
+}

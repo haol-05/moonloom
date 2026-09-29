@@ -1,0 +1,15 @@
+// The MoonLoom command line.
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/exec",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/plan",
+  "haol-05/moonloom/query",
+  "haol-05/moonloom/render",
+  "haol-05/moonloom/text",
+  "moonbitlang/core/env",
+  "moonbitlang/x/fs",
+  "moonbitlang/x/sys",
+}
+
+pkgtype(kind: "executable")
