@@ -1,0 +1,8 @@
+// Root package of MoonLoom: the value / record / table model shared by every
+// other package. Only toolchain packages are imported, so the model layer stays
+// free of third-party dependencies.
+import {
+  "haol-05/moonloom/ascii" @ascii,
+  "moonbitlang/core/debug",
+  "moonbitlang/core/string",
+}
