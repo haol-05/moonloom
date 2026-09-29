@@ -253,3 +253,78 @@ pub fn Query::stats_stage(self : Query) -> (Array[AggSpec], Array[String])? {
   }
   None
 }
+
+///|
+fn join_strings(items : Array[String], separator : String) -> String {
+  let out = StringBuilder()
+  let mut first = true
+  for item in items {
+    if !first {
+      out.write_string(separator)
+    }
+    out.write_string(item)
+    first = false
+  }
+  out.to_string()
+}
+
+///|
+/// Writes an expression back as query text.
+///
+/// Nested operators keep their parentheses, so the result is unambiguous even
+/// though the parser would read it the same way without them. `explain` uses
+/// this to show what it is about to run.
+pub fn Expr::render(self : Expr) -> String {
+  match self {
+    LitInt(value) => value.to_string()
+    LitNum(value) => @moonloom.format_double(value)
+    LitStr(text) => "\"" + text + "\""
+    LitBool(value) => if value { "true" } else { "false" }
+    LitNull => "null"
+    Field(name) => name
+    Unary(Neg, inner) => "-" + inner.render_operand()
+    Unary(Not, inner) => "not " + inner.render_operand()
+    Binary(_, _, _) => self.render_binary()
+    Call(name, args) =>
+      name + "(" + join_strings(args.map(fn(arg) { arg.render() }), ", ") + ")"
+    List(items) => "[" + join_strings(items.map(fn(item) { item.render() }), ", ") + "]"
+  }
+}
+
+///|
+fn Expr::render_binary(self : Expr) -> String {
+  match self {
+    Binary(op, left, right) =>
+      left.render_operand() + " " + op.symbol() + " " + right.render_operand()
+    _ => self.render()
+  }
+}
+
+///|
+/// Renders an operand, adding parentheses when it is itself an operator so that
+/// precedence survives the round trip.
+fn Expr::render_operand(self : Expr) -> String {
+  match self {
+    Binary(_, _, _) | Unary(_, _) => "(" + self.render() + ")"
+    _ => self.render()
+  }
+}
+
+///|
+/// Writes an aggregate back as query text.
+pub fn AggSpec::render(self : AggSpec) -> String {
+  let out = StringBuilder()
+  out.write_string(self.func.name())
+  out.write_string("(")
+  match self.arg {
+    Some(arg) => out.write_string(arg.render())
+    None => ()
+  }
+  match self.extra {
+    Some(extra) => out.write_string(", " + extra.render())
+    None => ()
+  }
+  out.write_string(")")
+  out.write_string(" as " + self.label)
+  out.to_string()
+}

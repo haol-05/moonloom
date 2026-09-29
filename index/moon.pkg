@@ -1,0 +1,15 @@
+// Indexes over a table.
+//
+// The index maps a printed field value to the row ids that carry it, which lets
+// an equality predicate in a query skip most rows before any expression is
+// evaluated. Posting lists stay sorted, so combining two of them is a linear
+// intersection.
+import {
+  "haol-05/moonloom" @moonloom,
+  "haol-05/moonloom/query" @query,
+  "moonbitlang/core/debug",
+}
+
+import {
+  "haol-05/moonloom/text" @text,
+} for "test"

@@ -1,0 +1,17 @@
+// The planner: turning a parsed query into an ordered set of steps and a
+// readable explanation of them.
+//
+// The planner is where the two optimisations of MoonLoom live. Both are
+// observable rather than hidden: `explain` reports the rows an index removed
+// and the columns the executor has to keep, so a slow query can be understood
+// instead of guessed at.
+import {
+  "haol-05/moonloom" @moonloom,
+  "haol-05/moonloom/index" @index,
+  "haol-05/moonloom/query" @query,
+  "moonbitlang/core/debug",
+}
+
+import {
+  "haol-05/moonloom/text" @text,
+} for "test"

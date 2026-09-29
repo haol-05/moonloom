@@ -190,7 +190,7 @@ pub fn Value::compare(self : Value, other : Value) -> Int {
     (Int(a), Num(b)) => compare_double(a.to_double(), b)
     (Num(a), Int(b)) => compare_double(a, b.to_double())
     (Num(a), Num(b)) => compare_double(a, b)
-    (Str(a), Str(b)) => if a == b { 0 } else if a < b { -1 } else { 1 }
+    (Str(a), Str(b)) => @ascii.compare_text(a, b)
     _ => 0
   }
 }

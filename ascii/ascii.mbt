@@ -104,3 +104,33 @@ pub fn ascii_eq_ignore_case(a : StringView, b : StringView) -> Bool {
   }
   true
 }
+
+///|
+/// Lexicographic comparison by UTF-16 code unit.
+///
+/// This is written out rather than written as `a < b` on purpose: the ordering
+/// a data tool needs has to be stable across targets and independent of any
+/// case folding, so it compares code units directly and reports a shorter
+/// string that is a prefix of a longer one as the smaller value.
+pub fn compare_text(a : String, b : String) -> Int {
+  let left = a.code_units()
+  let right = b.code_units()
+  let mut index = 0
+  while index < left.length() && index < right.length() {
+    let x = left[index].to_int()
+    let y = right[index].to_int()
+    if x != y {
+      return if x < y { -1 } else { 1 }
+    }
+    index += 1
+  }
+  let n = left.length()
+  let m = right.length()
+  if n == m {
+    0
+  } else if n < m {
+    -1
+  } else {
+    1
+  }
+}
