@@ -1,0 +1,10 @@
+.DS_Store
+_build/
+target/
+target
+.mooncakes/
+.moonagent/
+*.log
+
+# Contest submission document: kept locally, never published to GitHub or mooncakes.io.
+/申报书.md
