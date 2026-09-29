@@ -1,0 +1,6 @@
+2024-03-11T10:00:01Z info orders: order 8812 created for user u-1002
+2024-03-11T10:00:04Z error orders: database timeout after 5 retries
+2024-03-11T10:00:06Z warn auth: missing token for /api/users/me
+2024-03-11T10:00:09Z info catalog: product 4471 refreshed from cache
+2024-03-11T10:00:11Z error catalog: upstream unavailable, serving 503
+2024-03-11T10:00:17Z warn health: readiness probe failed

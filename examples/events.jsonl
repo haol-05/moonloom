@@ -1,0 +1,10 @@
+{"time":"2024-03-11T10:00:01Z","level":"info","service":"orders","duration_ms":12.4,"http":{"method":"GET","path":"/api/orders","status":200},"user":{"id":"u-1001","plan":"pro"},"message":"listed orders"}
+{"time":"2024-03-11T10:00:02Z","level":"info","service":"orders","duration_ms":41.8,"http":{"method":"POST","path":"/api/orders","status":201},"user":{"id":"u-1002","plan":"free"},"message":"created order"}
+{"time":"2024-03-11T10:00:04Z","level":"error","service":"orders","duration_ms":5021.0,"http":{"method":"GET","path":"/api/orders","status":500},"user":{"id":"u-1003","plan":"pro"},"message":"database timeout"}
+{"time":"2024-03-11T10:00:04Z","level":"error","service":"orders","duration_ms":5110.5,"http":{"method":"GET","path":"/api/orders","status":500},"user":{"id":"u-1003","plan":"pro"},"message":"database timeout"}
+{"time":"2024-03-11T10:00:06Z","level":"warn","service":"auth","duration_ms":8.1,"http":{"method":"GET","path":"/api/users/me","status":401},"user":{"id":"u-1004","plan":"free"},"message":"missing token"}
+{"time":"2024-03-11T10:00:07Z","level":"info","service":"auth","duration_ms":95.2,"http":{"method":"POST","path":"/api/login","status":200},"user":{"id":"u-1004","plan":"free"},"message":"logged in"}
+{"time":"2024-03-11T10:00:09Z","level":"info","service":"catalog","duration_ms":64.0,"http":{"method":"GET","path":"/api/products","status":200},"user":{"id":"u-1005","plan":"pro"},"message":"listed products"}
+{"time":"2024-03-11T10:00:11Z","level":"error","service":"catalog","duration_ms":3000.0,"http":{"method":"GET","path":"/api/orders","status":503},"user":{"id":"","plan":""},"message":"upstream unavailable"}
+{"time":"2024-03-11T10:00:13Z","level":"info","service":"web","duration_ms":2.2,"http":{"method":"GET","path":"/does-not-exist","status":404},"user":{"id":"u-1001","plan":"pro"},"message":"not found"}
+{"time":"2024-03-11T10:00:17Z","level":"warn","service":"health","duration_ms":1500.0,"http":{"method":"GET","path":"/health","status":500},"user":{"id":"","plan":""},"message":"probe failed"}

@@ -1,0 +1,16 @@
+// A self-contained demo of the whole pipeline.
+//
+// It embeds its inputs so that it runs on any target with no file access, and
+// walks through four questions that a log file or a data export usually raises:
+// what is failing, where the time goes, how the traffic splits, and whether the
+// index changed the answer.
+import {
+  "haol-05/moonloom/exec",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/plan",
+  "haol-05/moonloom/query",
+  "haol-05/moonloom/render",
+  "haol-05/moonloom/text",
+}
+
+pkgtype(kind: "executable")

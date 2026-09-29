@@ -1,0 +1,8 @@
+ts=2024-03-11T10:00:01Z level=info service=orders status=200 dur=12.4 msg="order listed"
+ts=2024-03-11T10:00:02Z level=info service=orders status=201 dur=41.8 msg="order created"
+ts=2024-03-11T10:00:04Z level=error service=orders status=500 dur=5021 msg="database timeout"
+ts=2024-03-11T10:00:06Z level=warn service=auth status=401 dur=8.1 msg="missing token"
+ts=2024-03-11T10:00:07Z level=info service=auth status=200 dur=95.2 msg="logged in"
+ts=2024-03-11T10:00:09Z level=info service=catalog status=200 dur=64 msg="products listed"
+ts=2024-03-11T10:00:11Z level=error service=catalog status=503 dur=3000 msg="upstream unavailable"
+ts=2024-03-11T10:00:17Z level=warn service=health status=500 dur=1500 msg="probe failed"

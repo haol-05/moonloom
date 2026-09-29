@@ -1,0 +1,11 @@
+region,channel,units,amount,reported_on
+North,online,120,4800.50,2024-03-01
+North,retail,80,3120.00,2024-03-02
+South,online,210,8610.25,2024-03-03
+South,retail,45,1780.00,2024-03-04
+East,online,310,12400.00,2024-03-05
+East,retail,60,2400.00,2024-03-06
+West,online,95,3610.75,2024-03-07
+West,retail,140,5320.00,2024-03-08
+North,partner,30,900.00,2024-03-09
+South,partner,75,2250.00,2024-03-10
