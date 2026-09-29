@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.1
+
+- **Command line.** An argument that is not part of the query is now reported
+  instead of being ignored: a second bare word produces
+  `unexpected extra argument '<word>'; quote the whole query as one argument`,
+  which is what a query split by the shell looks like, and an unrecognised
+  option is named. A missing value and a count that is not a number are named
+  too, instead of printing the usage alone.
+- **Documentation.** The example outputs in the README were re-run against the
+  sample files and corrected, and the quoting rule for a query argument is
+  stated where the examples are introduced.
+
 ## 0.1.0
 
 First release.

@@ -10,13 +10,14 @@ engine itself.
 $ moonloom query --file examples/access.log --stats \
     "where status >= 500 | stats count() as failures by path | sort failures desc"
 
-+---------------+----------+
-| path          | failures |
-+---------------+----------+
-| /api/orders   | 2        |
-| /api/products | 1        |
-+---------------+----------+
-rows in 21, scanned 21, filtered 18, groups 2, out 2
++--------------------+----------+
+| path               | failures |
++--------------------+----------+
+| /api/orders?page=2 | 2        |
+| /api/orders?page=1 | 1        |
+| /health            | 1        |
++--------------------+----------+
+rows in 21, scanned 21, filtered 17, groups 3, out 3
 ```
 
 There is no single format to standardise on. Every service writes logs its own
@@ -51,6 +52,14 @@ moon run --target js cmd/main -- query --file examples/access.log \
 The demo prints the plan, the rows and the cost for six queries; its last two
 sections run the same aggregation with and without an index so the difference
 is visible rather than claimed.
+
+In the examples below `moonloom` stands for the freshly built command line,
+`moon run --target js cmd/main --`. Every query has to arrive as **one**
+argument: a query that the shell splits makes the tool report
+`unexpected extra argument` rather than running a fragment of it. Inside a
+query, text literals may use either quote style, which is what makes the
+examples work in PowerShell as well as in `sh`, where the outer quoting rules
+differ.
 
 ## What the query language does
 
@@ -153,7 +162,7 @@ $ moonloom explain --file examples/access.log \
 plan
   scan            <input>
                   rows=21
-  index           remote_host=203.0.113.51  kept=2/21 (9.5%)
+  index           remote_host=203.0.113.51  kept=3/21 (14.3%)
   1. filter       remote_host == "203.0.113.51"
   2. project      time_text, method, path, status
   columns         remote_host, time_text, method, path, status
@@ -173,7 +182,7 @@ The executor reports what it cost:
 ```
 $ moonloom query --file examples/access.log --stats "where status >= 500 | stats count() as n by path"
 ...
-rows in 21, scanned 21, filtered 18, groups 2, out 2
+rows in 21, scanned 21, filtered 17, groups 3, out 3
 ```
 
 ## Using it as a library
@@ -255,7 +264,7 @@ moon run --target wasm examples/demo
 
 ## Related work
 
-A search of GitHub and mooncakes.io on **2026-09-30** for `moonbit query
+A search of GitHub and mooncakes.io on **2026-09-29** for `moonbit query
 engine`, `moonbit log query`, `moonbit logfmt` and `moonbit csv query` found no
 project that reads several text formats and queries them. The nearest
 neighbours, and how MoonLoom differs:
@@ -286,7 +295,7 @@ documentation ranges reserved by RFC 5737 and every name is invented.
 
 ## Environment note
 
-Verified on 2026-09-30 on Windows with `moon 0.1.20260920` and `moonc
+Verified on 2026-09-29 on Windows with `moon 0.1.20260920` and `moonc
 v0.10.14`: `moon check --deny-warn --target all`, `moon build` and `moon test
 --deny-warn` on `wasm`, `wasm-gc` and `js` (95 tests each), the demo through
 `moon run`, the command line through `moon run --target js cmd/main`, and
