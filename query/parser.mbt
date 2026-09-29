@@ -45,7 +45,10 @@ fn Parser::peek_keyword(self : Parser, word : String) -> Bool {
 }
 
 ///|
-fn Parser::expect_symbol(self : Parser, symbol : String) -> Unit raise QueryError {
+fn Parser::expect_symbol(
+  self : Parser,
+  symbol : String,
+) -> Unit raise QueryError {
   if self.peek_is_symbol(symbol) {
     self.advance()
   } else {
@@ -73,7 +76,10 @@ fn Parser::next_int(self : Parser, what : String) -> Int raise QueryError {
   self.advance()
   match @moonloom.parse_int_opt(token.text) {
     Some(value) => value
-    None => raise QueryError(self.position() + ": expected " + what + ", found " + token.text)
+    None =>
+      raise QueryError(
+        self.position() + ": expected " + what + ", found " + token.text,
+      )
   }
 }
 
@@ -81,7 +87,7 @@ fn Parser::next_int(self : Parser, what : String) -> Int raise QueryError {
 /// Parses a query.
 pub fn parse_query(text : String) -> Query raise QueryError {
   let tokens = tokenize(text)
-  let parser : Parser = { tokens, pos: 0 }
+  let parser : Parser = { tokens, pos: 0, }
   let mut source : String? = None
   if parser.peek_keyword("from") {
     parser.advance()
@@ -90,7 +96,9 @@ pub fn parse_query(text : String) -> Query raise QueryError {
       source = Some(token.text)
       parser.advance()
     } else {
-      raise QueryError(parser.position() + ": expected a source name after 'from'")
+      raise QueryError(
+        parser.position() + ": expected a source name after 'from'",
+      )
     }
   }
   let stages : Array[Stage] = []
@@ -99,7 +107,9 @@ pub fn parse_query(text : String) -> Query raise QueryError {
     if parser.peek_is_symbol("|") {
       parser.advance()
     } else if expect_pipe {
-      raise QueryError(parser.position() + ": expected '|' before the next stage")
+      raise QueryError(
+        parser.position() + ": expected '|' before the next stage",
+      )
     }
     expect_pipe = true
     stages.push(parse_stage(parser))
@@ -111,9 +121,7 @@ pub fn parse_query(text : String) -> Query raise QueryError {
 /// Parses a query and reports a mistake as a message instead of raising, which
 /// is what a command line or a UI wants.
 pub fn Query::parse(text : String) -> Result[Query, String] {
-  try {
-    Ok(parse_query(text))
-  } catch {
+  Ok(parse_query(text)) catch {
     QueryError(message) => Err(message)
   }
 }
@@ -139,7 +147,8 @@ fn parse_stage(parser : Parser) -> Stage raise QueryError {
     "limit" | "head" => Limit(parser.next_int("a row count"))
     "top" => parse_top(parser)
     "dedup" | "distinct" => Dedup(parse_path_list(parser))
-    _ => raise QueryError(parser.position() + ": unknown stage '" + keyword + "'")
+    _ =>
+      raise QueryError(parser.position() + ": unknown stage '" + keyword + "'")
   }
 }
 
@@ -147,7 +156,9 @@ fn parse_stage(parser : Parser) -> Stage raise QueryError {
 fn parse_top(parser : Parser) -> Stage raise QueryError {
   let count = parser.next_int("a row count")
   if !parser.peek_keyword("by") {
-    raise QueryError(parser.position() + ": 'top' needs 'by' followed by an ordering")
+    raise QueryError(
+      parser.position() + ": 'top' needs 'by' followed by an ordering",
+    )
   }
   parser.advance()
   Top(count, parse_sort_keys(parser))
@@ -179,7 +190,8 @@ fn parse_agg_spec(parser : Parser) -> AggSpec raise QueryError {
   let lower = name.to_lower()
   let func = match AggFunc::from_name(lower) {
     Some(f) => f
-    None => raise QueryError(parser.position() + ": unknown aggregate '" + name + "'")
+    None =>
+      raise QueryError(parser.position() + ": unknown aggregate '" + name + "'")
   }
   let mut arg : Expr? = None
   let mut extra : Expr? = None
@@ -195,14 +207,17 @@ fn parse_agg_spec(parser : Parser) -> AggSpec raise QueryError {
     parser.expect_symbol(")")
   }
   if func == Percentile && extra is None {
-    raise QueryError(parser.position() + ": percentile needs a value and a rank, as percentile(x, 95)")
+    raise QueryError(
+      parser.position() +
+      ": percentile needs a value and a rank, as percentile(x, 95)",
+    )
   }
   let mut label = default_alias(func, arg, extra)
   if parser.peek_keyword("as") {
     parser.advance()
     label = parser.next_ident("an alias")
   }
-  { func, arg, extra, label }
+  { func, arg, extra, label, }
 }
 
 ///|
@@ -268,7 +283,7 @@ fn parse_sort_keys(parser : Parser) -> Array[SortKey] raise QueryError {
     } else if parser.peek_keyword("asc") || parser.peek_keyword("ascending") {
       parser.advance()
     }
-    keys.push({ expr, desc })
+    keys.push({ expr, desc, })
     if parser.peek_is_symbol(",") {
       parser.advance()
     } else {
@@ -361,7 +376,11 @@ fn parse_comparison(parser : Parser) -> Expr raise QueryError {
     if !@ascii.ascii_eq_ignore_case(word, "null") {
       raise QueryError(parser.position() + ": expected 'null' after 'is'")
     }
-    return if negated { Binary(Ne, left, LitNull) } else { Binary(Eq, left, LitNull) }
+    return if negated {
+      Binary(Ne, left, LitNull)
+    } else {
+      Binary(Eq, left, LitNull)
+    }
   }
   match comparison_op(parser) {
     Some(op) => Binary(op, left, parse_additive(parser))
@@ -376,7 +395,11 @@ fn parse_additive(parser : Parser) -> Expr raise QueryError {
     let plus = parser.peek_is_symbol("+")
     parser.advance()
     let right = parse_multiplicative(parser)
-    left = if plus { Binary(Add, left, right) } else { Binary(Sub, left, right) }
+    left = if plus {
+      Binary(Add, left, right)
+    } else {
+      Binary(Sub, left, right)
+    }
   }
   left
 }
@@ -429,7 +452,10 @@ fn parse_primary(parser : Parser) -> Expr raise QueryError {
       if text.contains(".") || text.contains("e") || text.contains("E") {
         match @moonloom.parse_double_opt(text) {
           Some(value) => LitNum(value)
-          None => raise QueryError(parser.position() + ": '" + text + "' is not a number")
+          None =>
+            raise QueryError(
+              parser.position() + ": '" + text + "' is not a number",
+            )
         }
       } else {
         match @moonloom.parse_int64_opt(text) {
@@ -437,7 +463,10 @@ fn parse_primary(parser : Parser) -> Expr raise QueryError {
           None =>
             match @moonloom.parse_double_opt(text) {
               Some(value) => LitNum(value)
-              None => raise QueryError(parser.position() + ": '" + text + "' is not a number")
+              None =>
+                raise QueryError(
+                  parser.position() + ": '" + text + "' is not a number",
+                )
             }
         }
       }
@@ -495,7 +524,9 @@ fn parse_primary(parser : Parser) -> Expr raise QueryError {
         parser.expect_symbol("]")
         List(items)
       } else {
-        raise QueryError(parser.position() + ": expected a value, found '" + token.text + "'")
+        raise QueryError(
+          parser.position() + ": expected a value, found '" + token.text + "'",
+        )
       }
     TkEnd => raise QueryError(parser.position() + ": unexpected end of query")
   }

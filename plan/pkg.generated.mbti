@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/plan"
+
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/query",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn compile(@query.Query, @moonloom.Table, @index.TableIndex?) -> Plan
+
+// Errors
+
+// Types and methods
+pub(all) struct Plan {
+  source : String?
+  format : String
+  rows : Int
+  index_predicates : Array[String]
+  index_kept : Int
+  index_used : Bool
+  columns_needed : Array[String]
+  steps : Array[PlanStep]
+} derive(@debug.Debug)
+pub fn Plan::explain(Self) -> String
+pub fn Plan::keep_ratio(Self) -> Double
+pub fn Plan::pruned(Self) -> Int
+pub fn Plan::to_repr(Self) -> @debug.Repr
+
+pub(all) enum PlanStep {
+  IndexScan(String, @moonloom.Value, Int, Int)
+  Filter(@query.Expr)
+  Assign(String, @query.Expr)
+  ParsePattern(String)
+  Project(Array[String])
+  Aggregate(Array[@query.AggSpec], Array[String])
+  OrderBy(Array[@query.SortKey])
+  Limit(Int)
+  Top(Int, Array[@query.SortKey])
+  Dedup(Array[String])
+} derive(@debug.Debug)
+pub fn PlanStep::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

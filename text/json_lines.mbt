@@ -48,7 +48,12 @@ fn json_into_record(
     }
     let mut index = 0
     for item in items {
-      json_into_record(item, join_name(prefix, index.to_string()), record, flatten)
+      json_into_record(
+        item,
+        join_name(prefix, index.to_string()),
+        record,
+        flatten,
+      )
       index += 1
     }
   } else if value is String(s) {
@@ -66,9 +71,7 @@ fn json_into_record(
 
 ///|
 fn parse_json_value(text : String) -> Json? {
-  try {
-    Some(@json.parse(text))
-  } catch {
+  Some(@json.parse(text)) catch {
     @json.InvalidChar(_, _) => None
     @json.InvalidEof => None
     @json.InvalidNumber(_, _) => None
@@ -106,9 +109,7 @@ pub fn parse_jsonl(
         if record.size() == 0 {
           dataset.skip(
             @moonloom.Diagnostic::new(
-              "not-an-object",
-              line_number,
-              "line holds no fields",
+              "not-an-object", line_number, "line holds no fields",
             ),
           )
         } else {
@@ -118,7 +119,9 @@ pub fn parse_jsonl(
       }
       None =>
         dataset.skip(
-          @moonloom.Diagnostic::new("invalid-json", line_number, "line is not valid JSON"),
+          @moonloom.Diagnostic::new(
+            "invalid-json", line_number, "line is not valid JSON",
+          ),
         )
     }
   }
@@ -139,9 +142,11 @@ pub fn parse_json(
   match parse_json_value(strip_bom(text)) {
     None =>
       dataset.skip(
-        @moonloom.Diagnostic::new("invalid-json", 1, "document is not valid JSON"),
+        @moonloom.Diagnostic::new(
+          "invalid-json", 1, "document is not valid JSON",
+        ),
       )
-    Some(parsed) => {
+    Some(parsed) =>
       if parsed is Array(items) {
         let mut index = 0
         for item in items {
@@ -154,9 +159,7 @@ pub fn parse_json(
           if record.size() == 0 {
             dataset.skip(
               @moonloom.Diagnostic::new(
-                "not-an-object",
-                index,
-                "array element holds no fields",
+                "not-an-object", index, "array element holds no fields",
               ),
             )
           } else {
@@ -170,7 +173,6 @@ pub fn parse_json(
         dataset.add(record)
         dataset.lines_read += 1
       }
-    }
   }
   dataset
 }

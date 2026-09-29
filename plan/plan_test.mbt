@@ -3,8 +3,8 @@
 ///|
 fn plan_table() -> @moonloom.Table {
   return @text.parse_csv(
-    "service,level,duration\napi,error,12.5\napi,info,3\nweb,error,20\ndb,error,100\nweb,info,1.5\n",
-  ).table
+      "service,level,duration\napi,error,12.5\napi,info,3\nweb,error,20\ndb,error,100\nweb,info,1.5\n",
+    ).table
 }
 
 ///|

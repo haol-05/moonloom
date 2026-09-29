@@ -7,11 +7,15 @@
 // reader accepts a short line instead of dropping it.
 
 ///|
-fn token_at(line : String, cu : ArrayView[UInt16], start : Int) -> (String, Int) {
+fn token_at(
+  line : String,
+  cu : ArrayView[UInt16],
+  start : Int,
+) -> (String, Int) {
   let mut index = start
   while index < cu.length() &&
-    !@ascii.code_unit_is(cu[index], ' ') &&
-    !@ascii.code_unit_is(cu[index], '\t') {
+        !@ascii.code_unit_is(cu[index], ' ') &&
+        !@ascii.code_unit_is(cu[index], '\t') {
     index += 1
   }
   (line[start:index].to_owned(), index)
@@ -31,7 +35,10 @@ pub fn timestamp_value(raw : String) -> @moonloom.Value {
 ///|
 /// Reads one access log line. Returns `None` when the line does not have the
 /// `host ident user [time]` shape.
-pub fn parse_access_line(line : String, source_line? : Int) -> @moonloom.Record? {
+pub fn parse_access_line(
+  line : String,
+  source_line? : Int,
+) -> @moonloom.Record? {
   let cu = line.code_units()
   let n = cu.length()
   let record = @moonloom.Record::empty(source_line.unwrap_or(0), line)
@@ -136,9 +143,7 @@ pub fn parse_access_log(text : String, max_records? : Int) -> @moonloom.Dataset 
       None =>
         dataset.skip(
           @moonloom.Diagnostic::new(
-            "not-access-log",
-            line_number,
-            "line does not match the access log shape",
+            "not-access-log", line_number, "line does not match the access log shape",
           ),
         )
     }

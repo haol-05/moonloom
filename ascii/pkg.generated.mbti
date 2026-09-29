@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/ascii"
+
+// Values
+pub fn ascii_eq_ignore_case(StringView, StringView) -> Bool
+
+pub fn ascii_is_alnum(UInt16) -> Bool
+
+pub fn ascii_is_alpha(UInt16) -> Bool
+
+pub fn ascii_is_digit(UInt16) -> Bool
+
+pub fn ascii_is_lower(UInt16) -> Bool
+
+pub fn ascii_is_sign(UInt16) -> Bool
+
+pub fn ascii_is_space(UInt16) -> Bool
+
+pub fn ascii_is_upper(UInt16) -> Bool
+
+pub fn ascii_lower(UInt16) -> UInt16
+
+pub fn ascii_lower_char(Char) -> Char
+
+pub fn ascii_lower_string(StringView) -> String
+
+pub fn code_unit_is(UInt16, Char) -> Bool
+
+pub fn compare_text(String, String) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -13,7 +13,7 @@
 // and reports where a mistake is, which keeps the planner and the executor free
 // of character level concerns.
 import {
-  "haol-05/moonloom" @moonloom,
-  "haol-05/moonloom/ascii" @ascii,
+  "haol-05/moonloom",
+  "haol-05/moonloom/ascii",
   "moonbitlang/core/debug",
 }

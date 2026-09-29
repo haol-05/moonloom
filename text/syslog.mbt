@@ -52,7 +52,10 @@ fn facility_name(facility : Int) -> String {
 ///|
 /// Reads one syslog line, returning `None` when it does not start with a
 /// priority.
-pub fn parse_syslog_line(line : String, source_line? : Int) -> @moonloom.Record? {
+pub fn parse_syslog_line(
+  line : String,
+  source_line? : Int,
+) -> @moonloom.Record? {
   let cu = line.code_units()
   let n = cu.length()
   if n < 3 || !@ascii.code_unit_is(cu[0], '<') {
@@ -130,9 +133,7 @@ fn parse_rfc5424(
           structured.write_string("[" + pair.0 + "]")
           index = skip_spaces(cu, pair.1)
         }
-        None => {
-          index = n
-        }
+        None => index = n
       }
     }
     record.set("structured_data", @moonloom.Str(structured.to_string()))
@@ -191,7 +192,11 @@ fn parse_rfc3164(
       let closing = tail.find("]")
       record.set("app", @moonloom.Str(name))
       match closing {
-        Some(end) => record.set("procid", @moonloom.Value::from_text(tail[:end].to_owned()))
+        Some(end) =>
+          record.set(
+            "procid",
+            @moonloom.Value::from_text(tail[:end].to_owned()),
+          )
         None => record.set("procid", @moonloom.Str(tail))
       }
     }
@@ -223,9 +228,7 @@ pub fn parse_syslog(text : String, max_records? : Int) -> @moonloom.Dataset {
       None =>
         dataset.skip(
           @moonloom.Diagnostic::new(
-            "not-syslog",
-            line_number,
-            "line does not start with a priority",
+            "not-syslog", line_number, "line does not start with a priority",
           ),
         )
     }

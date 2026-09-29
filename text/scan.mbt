@@ -32,10 +32,7 @@ pub fn until_char(cu : ArrayView[UInt16], start : Int, delimiter : Char) -> Int 
 /// Reads a double-quoted run and returns the content between the quotes
 /// together with the index just past the closing quote. A backslash escapes the
 /// next character.
-pub fn read_quoted(
-  cu : ArrayView[UInt16],
-  start : Int,
-) -> (String, Int)? {
+pub fn read_quoted(cu : ArrayView[UInt16], start : Int) -> (String, Int)? {
   if start >= cu.length() || !@ascii.code_unit_is(cu[start], '"') {
     return None
   }

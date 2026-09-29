@@ -1,0 +1,127 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn escape_json(String) -> String
+
+pub fn find_field(Array[FieldInfo], String) -> FieldInfo?
+
+pub fn format_double(Double) -> String
+
+pub fn infer_fields(Table, distinct? : Bool) -> Array[FieldInfo]
+
+pub fn parse_double_opt(StringView) -> Double?
+
+pub fn parse_int64_opt(StringView) -> Int64?
+
+pub fn parse_int_opt(StringView) -> Int?
+
+// Errors
+
+// Types and methods
+pub(all) struct Dataset {
+  table : Table
+  format : String
+  mut lines_read : Int
+  mut skipped : Int
+} derive(@debug.Debug)
+pub fn Dataset::add(Self, Record) -> Unit
+pub fn Dataset::empty(String) -> Self
+pub fn Dataset::rows(Self) -> Int
+pub fn Dataset::skip(Self, Diagnostic) -> Unit
+pub fn Dataset::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Diagnostic {
+  code : String
+  line : Int
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn Diagnostic::equal(Self, Self) -> Bool
+pub fn Diagnostic::new(String, Int, String) -> Self
+pub fn Diagnostic::not_equal(Self, Self) -> Bool
+pub fn Diagnostic::to_repr(Self) -> @debug.Repr
+
+pub(all) struct FieldInfo {
+  name : String
+  kind : ValueKind
+  present : Int
+  missing : Int
+  distinct : Int
+} derive(Eq, @debug.Debug)
+pub fn FieldInfo::equal(Self, Self) -> Bool
+pub fn FieldInfo::not_equal(Self, Self) -> Bool
+pub fn FieldInfo::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Record {
+  fields : Map[String, Value]
+  order : Array[String]
+  source_line : Int
+  raw : String
+} derive(@debug.Debug)
+pub fn Record::empty(Int, String) -> Self
+pub fn Record::field(Self, String) -> Value
+pub fn Record::has(Self, String) -> Bool
+pub fn Record::names(Self) -> Array[String]
+pub fn Record::remove(Self, String) -> Unit
+pub fn Record::set(Self, String, Value) -> Unit
+pub fn Record::set_if_absent(Self, String, Value) -> Unit
+pub fn Record::size(Self) -> Int
+pub fn Record::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Table {
+  columns : Array[String]
+  records : Array[Record]
+  diagnostics : Array[Diagnostic]
+} derive(@debug.Debug)
+pub fn Table::add_column(Self, String) -> Unit
+pub fn Table::add_diagnostic(Self, Diagnostic) -> Unit
+pub fn Table::column_names(Self) -> Array[String]
+pub fn Table::empty() -> Self
+pub fn Table::is_empty(Self) -> Bool
+pub fn Table::length(Self) -> Int
+pub fn Table::of_records(Array[String], Array[Record]) -> Self
+pub fn Table::push(Self, Record) -> Unit
+pub fn Table::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Value {
+  Null
+  Bool(Bool)
+  Int(Int64)
+  Num(Double)
+  Str(String)
+} derive(Eq, @debug.Debug)
+pub fn Value::as_int(Self) -> Int64?
+pub fn Value::as_num(Self) -> Double?
+pub fn Value::as_text(Self) -> String
+pub fn Value::compare(Self, Self) -> Int
+pub fn Value::display(Self) -> String
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::from_text(String) -> Self
+pub fn Value::is_null(Self) -> Bool
+pub fn Value::json_text(Self) -> String
+pub fn Value::kind(Self) -> ValueKind
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::text_eq(Self, Self) -> Bool
+pub fn Value::to_repr(Self) -> @debug.Repr
+pub fn Value::truthy(Self) -> Bool
+
+pub(all) enum ValueKind {
+  KindNull
+  KindBool
+  KindInt
+  KindNum
+  KindText
+  KindMixed
+} derive(Eq, @debug.Debug)
+pub fn ValueKind::equal(Self, Self) -> Bool
+pub fn ValueKind::label(Self) -> String
+pub fn ValueKind::not_equal(Self, Self) -> Bool
+pub fn ValueKind::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

@@ -57,10 +57,7 @@ pub fn Plan::keep_ratio(self : Plan) -> Double {
 ///|
 fn collect_fields(expr : @query.Expr, out : Array[String]) -> Unit {
   match expr {
-    @query.Field(name) =>
-      if !out.contains(name) {
-        out.push(name)
-      }
+    @query.Field(name) => if !out.contains(name) { out.push(name) }
     @query.Unary(_, inner) => collect_fields(inner, out)
     @query.Binary(_, left, right) => {
       collect_fields(left, out)
@@ -79,7 +76,10 @@ fn collect_fields(expr : @query.Expr, out : Array[String]) -> Unit {
 }
 
 ///|
-fn collect_sort_fields(keys : Array[@query.SortKey], out : Array[String]) -> Unit {
+fn collect_sort_fields(
+  keys : Array[@query.SortKey],
+  out : Array[String],
+) -> Unit {
   for key in keys {
     collect_fields(key.expr, out)
   }
@@ -228,10 +228,14 @@ fn collect_equalities_for_plan(
     }
     @query.Binary(@query.Eq, left, right) =>
       match (left, right) {
-        (@query.Field(name), @query.LitInt(value)) => out.push((name, @moonloom.Int(value)))
-        (@query.Field(name), @query.LitNum(value)) => out.push((name, @moonloom.Num(value)))
-        (@query.Field(name), @query.LitStr(value)) => out.push((name, @moonloom.Str(value)))
-        (@query.Field(name), @query.LitBool(value)) => out.push((name, @moonloom.Bool(value)))
+        (@query.Field(name), @query.LitInt(value)) =>
+          out.push((name, @moonloom.Int(value)))
+        (@query.Field(name), @query.LitNum(value)) =>
+          out.push((name, @moonloom.Num(value)))
+        (@query.Field(name), @query.LitStr(value)) =>
+          out.push((name, @moonloom.Str(value)))
+        (@query.Field(name), @query.LitBool(value)) =>
+          out.push((name, @moonloom.Bool(value)))
         _ => ()
       }
     _ => ()
@@ -274,20 +278,37 @@ pub fn Plan::explain(self : Plan) -> String {
   let mut number = 1
   for step in self.steps {
     match step {
-      IndexScan(_, _, _, _) => ()
+      // The index scan is already shown above as a property of the scan, so it
+      // does not take a step number of its own.
+      IndexScan(_, _, _, _) => continue
+      _ => ()
+    }
+    match step {
       Filter(expr) =>
         out.write_string(
           "  " + number.to_string() + ". filter       " + expr.render() + "\n",
         )
       Assign(name, expr) =>
         out.write_string(
-          "  " + number.to_string() + ". assign       " + name + " = " + expr.render() + "\n",
+          "  " +
+          number.to_string() +
+          ". assign       " +
+          name +
+          " = " +
+          expr.render() +
+          "\n",
         )
       ParsePattern(pattern) =>
-        out.write_string("  " + number.to_string() + ". parse        " + pattern + "\n")
+        out.write_string(
+          "  " + number.to_string() + ". parse        " + pattern + "\n",
+        )
       Project(fields) =>
         out.write_string(
-          "  " + number.to_string() + ". project      " + fields.join(", ") + "\n",
+          "  " +
+          number.to_string() +
+          ". project      " +
+          fields.join(", ") +
+          "\n",
         )
       Aggregate(specs, groups) =>
         out.write_string(
@@ -300,10 +321,20 @@ pub fn Plan::explain(self : Plan) -> String {
         )
       OrderBy(keys) =>
         out.write_string(
-          "  " + number.to_string() + ". order by     " + render_keys(keys) + "\n",
+          "  " +
+          number.to_string() +
+          ". order by     " +
+          render_keys(keys) +
+          "\n",
         )
       Limit(count) =>
-        out.write_string("  " + number.to_string() + ". limit        " + count.to_string() + "\n")
+        out.write_string(
+          "  " +
+          number.to_string() +
+          ". limit        " +
+          count.to_string() +
+          "\n",
+        )
       Top(count, keys) =>
         out.write_string(
           "  " +
@@ -316,8 +347,13 @@ pub fn Plan::explain(self : Plan) -> String {
         )
       Dedup(fields) =>
         out.write_string(
-          "  " + number.to_string() + ". dedup        " + fields.join(", ") + "\n",
+          "  " +
+          number.to_string() +
+          ". dedup        " +
+          fields.join(", ") +
+          "\n",
         )
+      IndexScan(_, _, _, _) => ()
     }
     number += 1
   }
@@ -335,7 +371,7 @@ pub fn Plan::explain(self : Plan) -> String {
 
 ///|
 fn render_keys(keys : Array[@query.SortKey]) -> String {
-  keys.map(fn(key) {
-    key.expr.render() + (if key.desc { " desc" } else { " asc" })
-  }).join(", ")
+  keys
+  .map(fn(key) { key.expr.render() + (if key.desc { " desc" } else { " asc" }) })
+  .join(", ")
 }

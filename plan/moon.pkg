@@ -6,12 +6,12 @@
 // and the columns the executor has to keep, so a slow query can be understood
 // instead of guessed at.
 import {
-  "haol-05/moonloom" @moonloom,
-  "haol-05/moonloom/index" @index,
-  "haol-05/moonloom/query" @query,
+  "haol-05/moonloom",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/query",
   "moonbitlang/core/debug",
 }
 
 import {
-  "haol-05/moonloom/text" @text,
+  "haol-05/moonloom/text",
 } for "test"

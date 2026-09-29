@@ -51,7 +51,11 @@ pub fn ResultSet::column_index(self : ResultSet, name : String) -> Int? {
 }
 
 ///|
-pub fn ResultSet::value(self : ResultSet, row : Int, column : String) -> @moonloom.Value {
+pub fn ResultSet::value(
+  self : ResultSet,
+  row : Int,
+  column : String,
+) -> @moonloom.Value {
   match self.column_index(column) {
     Some(at) =>
       if row < self.rows.length() && at < self.rows[row].length() {
@@ -131,7 +135,7 @@ fn relation_of(
         raws.push(record.raw)
       }
   }
-  { columns, rows, raws }
+  { columns, rows, raws, }
 }
 
 ///|
@@ -147,7 +151,7 @@ fn apply_filter(rel : Rel, expr : @query.Expr) -> Rel {
     }
     index += 1
   }
-  { columns: rel.columns, rows: kept, raws: kept_raws }
+  { columns: rel.columns, rows: kept, raws: kept_raws, }
 }
 
 ///|
@@ -173,7 +177,9 @@ fn apply_parse(rel : Rel, pattern : String) -> Rel {
     None => rel
     Some(compiled) => {
       let line_position = rel.column_position("line")
-      for row_index = 0; row_index < rel.rows.length(); row_index = row_index + 1 {
+      for row_index = 0
+          row_index < rel.rows.length()
+          row_index = row_index + 1 {
         let text = if rel.raws[row_index] != "" {
           rel.raws[row_index]
         } else {
@@ -183,7 +189,7 @@ fn apply_parse(rel : Rel, pattern : String) -> Rel {
           }
         }
         match compiled.capture(text) {
-          Some(record) => {
+          Some(record) =>
             for name in record.order {
               let position = match rel.column_position(name) {
                 Some(at) => at
@@ -199,7 +205,6 @@ fn apply_parse(rel : Rel, pattern : String) -> Rel {
                 rel.rows[row_index][position] = record.field(name)
               }
             }
-          }
           None => ()
         }
       }
@@ -231,7 +236,7 @@ fn apply_project(rel : Rel, fields : Array[String]) -> Rel {
     }
     rows.push(projected)
   }
-  { columns: out_columns, rows, raws: rel.raws }
+  { columns: out_columns, rows, raws: rel.raws, }
 }
 
 ///|
@@ -271,7 +276,11 @@ priv struct AggState {
 fn AggState::new(spec : @query.AggSpec) -> AggState {
   {
     func: spec.func,
-    rank: if spec.func == @query.Percentile { rank_of(spec.extra) } else { 0.0 },
+    rank: if spec.func == @query.Percentile {
+      rank_of(spec.extra)
+    } else {
+      0.0
+    },
     count: 0,
     numeric_count: 0,
     sum: 0.0,
@@ -305,7 +314,11 @@ fn rank_of(extra : @query.Expr?) -> Double {
 }
 
 ///|
-fn AggState::update(self : AggState, value : @moonloom.Value, counts_rows : Bool) -> Unit {
+fn AggState::update(
+  self : AggState,
+  value : @moonloom.Value,
+  counts_rows : Bool,
+) -> Unit {
   if !counts_rows && value.is_null() {
     return
   }
@@ -442,7 +455,11 @@ fn AggState::finish_percentile(self : AggState) -> @moonloom.Value {
 ///
 /// Groups come out ordered by their group values, so the same input always
 /// produces the same result regardless of the order rows arrived in.
-fn apply_aggregate(rel : Rel, specs : Array[@query.AggSpec], groups : Array[String]) -> Rel {
+fn apply_aggregate(
+  rel : Rel,
+  specs : Array[@query.AggSpec],
+  groups : Array[String],
+) -> Rel {
   let env = rel.env()
   let keys : Array[Array[@moonloom.Value]] = []
   let states : Array[Array[AggState]] = []
@@ -511,7 +528,7 @@ fn apply_aggregate(rel : Rel, specs : Array[@query.AggSpec], groups : Array[Stri
     rows.push(row)
     raws.push("")
   }
-  { columns, rows, raws }
+  { columns, rows, raws, }
 }
 
 ///|
@@ -578,7 +595,7 @@ fn reorder(rel : Rel, order : Array[Int]) -> Rel {
     rows.push(rel.rows[at])
     raws.push(rel.raws[at])
   }
-  { columns: rel.columns, rows, raws }
+  { columns: rel.columns, rows, raws, }
 }
 
 ///|
@@ -592,7 +609,7 @@ fn apply_limit(rel : Rel, count : Int) -> Rel {
     rows.push(rel.rows[index])
     raws.push(rel.raws[index])
   }
-  { columns: rel.columns, rows, raws }
+  { columns: rel.columns, rows, raws, }
 }
 
 ///|
@@ -625,7 +642,7 @@ fn apply_dedup(rel : Rel, fields : Array[String]) -> Rel {
     }
     index += 1
   }
-  { columns: rel.columns, rows, raws }
+  { columns: rel.columns, rows, raws, }
 }
 
 ///|
@@ -711,7 +728,7 @@ pub fn query_text(
   format? : String,
   index? : Bool,
 ) -> Result[ResultSet, String] {
-  let dataset = @text.parse_auto(source, format?=format)
+  let dataset = @text.parse_auto(source, format?)
   let built = if index.unwrap_or(true) {
     Some(@index.TableIndex::build(dataset.table))
   } else {

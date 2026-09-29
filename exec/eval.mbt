@@ -18,7 +18,7 @@ pub fn Env::for_columns(columns : Array[String]) -> Env {
     positions[name] = index
     index += 1
   }
-  { positions, patterns: Map([]) }
+  { positions, patterns: Map([]), }
 }
 
 ///|
@@ -29,14 +29,13 @@ fn Env::position(self : Env, name : String) -> Int? {
 ///|
 /// Reads a field from a row. A name the relation does not carry is null, which
 /// is what makes `user is null` work on a file where the field appears midway.
-pub fn read_field(env : Env, row : Array[@moonloom.Value], name : String) -> @moonloom.Value {
+pub fn read_field(
+  env : Env,
+  row : Array[@moonloom.Value],
+  name : String,
+) -> @moonloom.Value {
   match env.position(name) {
-    Some(at) =>
-      if at < row.length() {
-        row[at]
-      } else {
-        @moonloom.Null
-      }
+    Some(at) => if at < row.length() { row[at] } else { @moonloom.Null }
     None => @moonloom.Null
   }
 }
@@ -48,9 +47,7 @@ fn matches_pattern(env : Env, pattern : String, text : String) -> Bool {
   match env.patterns.get(pattern) {
     Some(compiled) => compiled.execute(text) is Some(_)
     None => {
-      let built : @string.Regex? = try {
-        Some(@string.Regex::Regex(pattern))
-      } catch {
+      let built : @string.Regex? = Some(@string.Regex::Regex(pattern)) catch {
         _ => None
       }
       match built {
@@ -81,14 +78,7 @@ pub fn character_length(text : String) -> Int {
 /// order used by sorting, so a comparison is never undefined.
 fn compare_for_order(left : @moonloom.Value, right : @moonloom.Value) -> Int {
   match (left.as_num(), right.as_num()) {
-    (Some(a), Some(b)) =>
-      if a < b {
-        -1
-      } else if a > b {
-        1
-      } else {
-        0
-      }
+    (Some(a), Some(b)) => if a < b { -1 } else if a > b { 1 } else { 0 }
     _ => left.compare(right)
   }
 }
@@ -109,7 +99,10 @@ fn values_equal(left : @moonloom.Value, right : @moonloom.Value) -> Bool {
 }
 
 ///|
-fn numeric(left : @moonloom.Value, right : @moonloom.Value) -> (Double, Double)? {
+fn numeric(
+  left : @moonloom.Value,
+  right : @moonloom.Value,
+) -> (Double, Double)? {
   match (left.as_num(), right.as_num()) {
     (Some(a), Some(b)) => Some((a, b))
     _ => None
@@ -118,7 +111,11 @@ fn numeric(left : @moonloom.Value, right : @moonloom.Value) -> (Double, Double)?
 
 ///|
 /// Evaluates one expression against one row.
-pub fn eval(env : Env, expr : @query.Expr, row : Array[@moonloom.Value]) -> @moonloom.Value {
+pub fn eval(
+  env : Env,
+  expr : @query.Expr,
+  row : Array[@moonloom.Value],
+) -> @moonloom.Value {
   match expr {
     @query.LitInt(value) => @moonloom.Int(value)
     @query.LitNum(value) => @moonloom.Num(value)
@@ -205,7 +202,12 @@ fn eval_binary(
       }
     @query.Div =>
       match numeric(left, right) {
-        Some(pair) => if pair.1 == 0.0 { @moonloom.Null } else { number_value(pair.0 / pair.1) }
+        Some(pair) =>
+          if pair.1 == 0.0 {
+            @moonloom.Null
+          } else {
+            number_value(pair.0 / pair.1)
+          }
         None => @moonloom.Null
       }
     @query.Mod =>
@@ -214,7 +216,9 @@ fn eval_binary(
           if pair.1 == 0.0 {
             @moonloom.Null
           } else {
-            number_value(pair.0 - pair.1 * (pair.0 / pair.1).to_int().to_double())
+            number_value(
+              pair.0 - pair.1 * (pair.0 / pair.1).to_int().to_double(),
+            )
           }
         None => @moonloom.Null
       }
@@ -225,10 +229,14 @@ fn eval_binary(
     @query.Gt => @moonloom.Bool(compare_for_order(left, right) > 0)
     @query.Ge => @moonloom.Bool(compare_for_order(left, right) >= 0)
     @query.Contains => @moonloom.Bool(left.display().contains(right.display()))
-    @query.StartsWith => @moonloom.Bool(left.display().has_prefix(right.display()))
-    @query.EndsWith => @moonloom.Bool(left.display().has_suffix(right.display()))
-    @query.Match => @moonloom.Bool(matches_pattern(env, right.display(), left.display()))
-    @query.NotMatch => @moonloom.Bool(!matches_pattern(env, right.display(), left.display()))
+    @query.StartsWith =>
+      @moonloom.Bool(left.display().has_prefix(right.display()))
+    @query.EndsWith =>
+      @moonloom.Bool(left.display().has_suffix(right.display()))
+    @query.Match =>
+      @moonloom.Bool(matches_pattern(env, right.display(), left.display()))
+    @query.NotMatch =>
+      @moonloom.Bool(!matches_pattern(env, right.display(), left.display()))
     @query.In =>
       match right_expr {
         @query.List(items) => {
@@ -262,7 +270,10 @@ fn call_function(
     "trim" => unary_text(env, args, row, fn(text) { text.trim().to_owned() })
     "len" | "length" =>
       match args {
-        [only] => @moonloom.Int(character_length(eval(env, only, row).display()).to_int64())
+        [only] =>
+          @moonloom.Int(
+            character_length(eval(env, only, row).display()).to_int64(),
+          )
         _ => @moonloom.Null
       }
     "str" | "text" =>
@@ -334,17 +345,20 @@ fn call_function(
     "substr" | "substring" =>
       match args {
         [text, start] =>
-          match (eval(env, text, row).display(), eval(env, start, row).as_int()) {
+          match
+            (eval(env, text, row).display(), eval(env, start, row).as_int()) {
             (source, Some(from)) => slice_text(source, from, None)
             _ => @moonloom.Null
           }
         [text, start, length] =>
-          match (
-            eval(env, text, row).display(),
-            eval(env, start, row).as_int(),
-            eval(env, length, row).as_int(),
-          ) {
-            (source, Some(from), Some(count)) => slice_text(source, from, Some(count))
+          match
+            (
+              eval(env, text, row).display(),
+              eval(env, start, row).as_int(),
+              eval(env, length, row).as_int(),
+            ) {
+            (source, Some(from), Some(count)) =>
+              slice_text(source, from, Some(count))
             _ => @moonloom.Null
           }
         _ => @moonloom.Null
@@ -353,7 +367,9 @@ fn call_function(
       match args {
         [text, old, fresh] =>
           @moonloom.Str(
-            eval(env, text, row).display().replace_all(
+            eval(env, text, row)
+            .display()
+            .replace_all(
               old=eval(env, old, row).display(),
               new=eval(env, fresh, row).display(),
             ),
@@ -363,7 +379,8 @@ fn call_function(
     "abs" => unary_number(env, args, row, fn(value) { value.abs() })
     "ceil" => unary_number(env, args, row, fn(value) { @math.ceil(value) })
     "floor" => unary_number(env, args, row, fn(value) { @math.floor(value) })
-    "round" => unary_number(env, args, row, fn(value) { @math.floor(value + 0.5) })
+    "round" =>
+      unary_number(env, args, row, fn(value) { @math.floor(value + 0.5) })
     "sqrt" => unary_number(env, args, row, fn(value) { value.sqrt() })
     "sign" =>
       unary_number(env, args, row, fn(value) {
@@ -378,7 +395,8 @@ fn call_function(
     "pow" =>
       match args {
         [base, exponent] =>
-          match (eval(env, base, row).as_num(), eval(env, exponent, row).as_num()) {
+          match
+            (eval(env, base, row).as_num(), eval(env, exponent, row).as_num()) {
             (Some(a), Some(b)) => number_value(@math.pow(a, b))
             _ => @moonloom.Null
           }
@@ -393,7 +411,11 @@ fn call_function(
 ///|
 /// Cuts a string by character offsets. A start past the end gives an empty
 /// string and a negative start counts from the end.
-fn slice_text(source : String, from : Int64, length : Int64?) -> @moonloom.Value {
+fn slice_text(
+  source : String,
+  from : Int64,
+  length : Int64?,
+) -> @moonloom.Value {
   let characters = source.iter().to_array()
   let total = characters.length()
   let mut start = from.to_int()
@@ -410,7 +432,13 @@ fn slice_text(source : String, from : Int64, length : Int64?) -> @moonloom.Value
   match length {
     Some(count) => {
       let end = start + count.to_int()
-      finish = if end < start { start } else if end > total { total } else { end }
+      finish = if end < start {
+        start
+      } else if end > total {
+        total
+      } else {
+        end
+      }
     }
     None => ()
   }

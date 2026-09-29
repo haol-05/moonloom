@@ -77,7 +77,11 @@ pub fn infer_fields(table : Table, distinct? : Bool) -> Array[FieldInfo] {
       kind,
       present,
       missing,
-      distinct: if count_distinct { seen.length() } else { 0 },
+      distinct: if count_distinct {
+        seen.length()
+      } else {
+        0
+      },
     })
   }
   fields

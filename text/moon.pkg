@@ -5,8 +5,8 @@
 // diagnostic instead of an error. That is what lets one query run over a log
 // file with a few broken lines.
 import {
-  "haol-05/moonloom" @moonloom,
-  "haol-05/moonloom/ascii" @ascii,
+  "haol-05/moonloom",
+  "haol-05/moonloom/ascii",
   "moonbitlang/core/debug",
   "moonbitlang/core/json",
   "moonbitlang/core/string",

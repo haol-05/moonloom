@@ -5,11 +5,11 @@
 // evaluated. Posting lists stay sorted, so combining two of them is a linear
 // intersection.
 import {
-  "haol-05/moonloom" @moonloom,
-  "haol-05/moonloom/query" @query,
+  "haol-05/moonloom",
+  "haol-05/moonloom/query",
   "moonbitlang/core/debug",
 }
 
 import {
-  "haol-05/moonloom/text" @text,
+  "haol-05/moonloom/text",
 } for "test"

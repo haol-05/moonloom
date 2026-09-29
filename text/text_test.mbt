@@ -143,7 +143,9 @@ test "json: an array of objects becomes rows" {
 
 ///|
 test "logfmt: quoted values, numbers and bare flags" {
-  let dataset = @text.parse_logfmt("level=info msg=\"hello world\" n=3 ok=true verbose\n")
+  let dataset = @text.parse_logfmt(
+    "level=info msg=\"hello world\" n=3 ok=true verbose\n",
+  )
   let record = dataset.table.records[0]
   assert_eq(record.field("level"), @moonloom.Str("info"))
   assert_eq(record.field("msg"), @moonloom.Str("hello world"))
@@ -165,7 +167,10 @@ test "keyvalue: sections prefix later keys" {
 
 ///|
 test "keyvalue: dash list items and inline comments" {
-  let dataset = @text.parse_keyvalue("- name: api\n  replicas: 3  # three\n", sections=false)
+  let dataset = @text.parse_keyvalue(
+    "- name: api\n  replicas: 3  # three\n",
+    sections=false,
+  )
   let record = dataset.table.records[0]
   assert_eq(record.field("name"), @moonloom.Str("api"))
   assert_eq(record.field("replicas"), @moonloom.Int(3L))
@@ -194,7 +199,9 @@ test "access: combined log line is split into fields" {
 
 ///|
 test "access: a short line still yields the readable fields" {
-  let dataset = @text.parse_access_log("10.0.0.1 - - [10/Oct/2000:13:55:36 -0700] \"GET / HTTP/1.1\" 304 -\n")
+  let dataset = @text.parse_access_log(
+    "10.0.0.1 - - [10/Oct/2000:13:55:36 -0700] \"GET / HTTP/1.1\" 304 -\n",
+  )
   let record = dataset.table.records[0]
   assert_eq(record.field("status"), @moonloom.Int(304L))
   assert_eq(record.field("bytes"), @moonloom.Str("-"))

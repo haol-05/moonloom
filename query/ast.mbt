@@ -226,8 +226,12 @@ pub extend Query with @debug.Debug::{to_repr}
 
 ///|
 /// A query and where it came from.
-pub fn Query::new(source : String?, stages : Array[Stage], text : String) -> Query {
-  { source, stages, text }
+pub fn Query::new(
+  source : String?,
+  stages : Array[Stage],
+  text : String,
+) -> Query {
+  { source, stages, text, }
 }
 
 ///|
@@ -287,7 +291,8 @@ pub fn Expr::render(self : Expr) -> String {
     Binary(_, _, _) => self.render_binary()
     Call(name, args) =>
       name + "(" + join_strings(args.map(fn(arg) { arg.render() }), ", ") + ")"
-    List(items) => "[" + join_strings(items.map(fn(item) { item.render() }), ", ") + "]"
+    List(items) =>
+      "[" + join_strings(items.map(fn(item) { item.render() }), ", ") + "]"
   }
 }
 

@@ -37,9 +37,9 @@ pub fn TableIndex::build(
     Some(names) => names
     None => table.column_names()
   }
-  let index : TableIndex = { fields: Map([]), order: [], rows: table.length() }
+  let index : TableIndex = { fields: Map([]), order: [], rows: table.length(), }
   for name in wanted {
-    let field : FieldIndex = { field: name, postings: Map([]), entries: 0 }
+    let field : FieldIndex = { field: name, postings: Map([]), entries: 0, }
     let mut row = 0
     for record in table.records {
       let value = record.field(name)
@@ -97,7 +97,11 @@ pub fn TableIndex::is_empty(self : TableIndex) -> Bool {
 
 ///|
 /// Row ids carrying a value in an indexed field, sorted ascending.
-pub fn TableIndex::lookup(self : TableIndex, field : String, value : String) -> Array[Int]? {
+pub fn TableIndex::lookup(
+  self : TableIndex,
+  field : String,
+  value : String,
+) -> Array[Int]? {
   match self.fields.get(field) {
     Some(indexed) => indexed.postings.get(value)
     None => None
@@ -184,14 +188,22 @@ fn collect_equalities(
     }
     @query.Binary(@query.Eq, left, right) =>
       match (left, right) {
-        (@query.Field(name), @query.LitInt(value)) => out.push((name, @moonloom.Int(value)))
-        (@query.Field(name), @query.LitNum(value)) => out.push((name, @moonloom.Num(value)))
-        (@query.Field(name), @query.LitStr(value)) => out.push((name, @moonloom.Str(value)))
-        (@query.Field(name), @query.LitBool(value)) => out.push((name, @moonloom.Bool(value)))
-        (@query.LitInt(value), @query.Field(name)) => out.push((name, @moonloom.Int(value)))
-        (@query.LitNum(value), @query.Field(name)) => out.push((name, @moonloom.Num(value)))
-        (@query.LitStr(value), @query.Field(name)) => out.push((name, @moonloom.Str(value)))
-        (@query.LitBool(value), @query.Field(name)) => out.push((name, @moonloom.Bool(value)))
+        (@query.Field(name), @query.LitInt(value)) =>
+          out.push((name, @moonloom.Int(value)))
+        (@query.Field(name), @query.LitNum(value)) =>
+          out.push((name, @moonloom.Num(value)))
+        (@query.Field(name), @query.LitStr(value)) =>
+          out.push((name, @moonloom.Str(value)))
+        (@query.Field(name), @query.LitBool(value)) =>
+          out.push((name, @moonloom.Bool(value)))
+        (@query.LitInt(value), @query.Field(name)) =>
+          out.push((name, @moonloom.Int(value)))
+        (@query.LitNum(value), @query.Field(name)) =>
+          out.push((name, @moonloom.Num(value)))
+        (@query.LitStr(value), @query.Field(name)) =>
+          out.push((name, @moonloom.Str(value)))
+        (@query.LitBool(value), @query.Field(name)) =>
+          out.push((name, @moonloom.Bool(value)))
         _ => ()
       }
     _ => ()
@@ -230,7 +242,7 @@ pub fn TableIndex::candidates(
     }
   }
   match rows {
-    Some(ids) => Some({ rows: ids, predicates: labels, total: self.rows })
+    Some(ids) => Some({ rows: ids, predicates: labels, total: self.rows, })
     None => None
   }
 }

@@ -3,8 +3,8 @@
 ///|
 fn sample_table() -> @moonloom.Table {
   return @text.parse_csv(
-    "service,level,duration\napi,error,12.5\napi,info,3\nweb,error,20\ndb,error,100\nweb,info,1.5\n",
-  ).table
+      "service,level,duration\napi,error,12.5\napi,info,3\nweb,error,20\ndb,error,100\nweb,info,1.5\n",
+    ).table
 }
 
 ///|
@@ -42,7 +42,8 @@ test "index: a column that is unique per row is not worth indexing" {
 test "index: a conjunction narrows to the rows that match every predicate" {
   let table = sample_table()
   let index = @index.TableIndex::build(table)
-  let query = match @query.Query::parse("where level == \"error\" and service == \"web\"") {
+  let query = match
+    @query.Query::parse("where level == \"error\" and service == \"web\"") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -69,7 +70,8 @@ test "index: a conjunction narrows to the rows that match every predicate" {
 test "index: a disjunction is not used for pruning" {
   let table = sample_table()
   let index = @index.TableIndex::build(table)
-  let query = match @query.Query::parse("where level == \"error\" or service == \"web\"") {
+  let query = match
+    @query.Query::parse("where level == \"error\" or service == \"web\"") {
     Ok(q) => q
     Err(message) => {
       fail(message)

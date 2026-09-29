@@ -46,7 +46,9 @@ fn is_ident_start(c : UInt16) -> Bool {
 /// Identifiers may carry dots, which is how a nested field such as
 /// `http.status` or `tags.0` is named.
 fn is_ident_body(c : UInt16) -> Bool {
-  @ascii.ascii_is_alnum(c) || @ascii.code_unit_is(c, '_') || @ascii.code_unit_is(c, '.')
+  @ascii.ascii_is_alnum(c) ||
+  @ascii.code_unit_is(c, '_') ||
+  @ascii.code_unit_is(c, '.')
 }
 
 ///|
@@ -67,11 +69,15 @@ pub fn tokenize(text : String) -> Array[Token] raise QueryError {
       line_start = index
       continue
     }
-    if @ascii.code_unit_is(c, ' ') || @ascii.code_unit_is(c, '\t') || @ascii.code_unit_is(c, '\r') {
+    if @ascii.code_unit_is(c, ' ') ||
+      @ascii.code_unit_is(c, '\t') ||
+      @ascii.code_unit_is(c, '\r') {
       index += 1
       continue
     }
-    if @ascii.code_unit_is(c, '/') && index + 1 < n && @ascii.code_unit_is(cu[index + 1], '/') {
+    if @ascii.code_unit_is(c, '/') &&
+      index + 1 < n &&
+      @ascii.code_unit_is(cu[index + 1], '/') {
       while index < n && !@ascii.code_unit_is(cu[index], '\n') {
         index += 1
       }
@@ -83,7 +89,12 @@ pub fn tokenize(text : String) -> Array[Token] raise QueryError {
       while index < n && is_ident_body(cu[index]) {
         index += 1
       }
-      tokens.push({ kind: TkIdent, text: text[start:index].to_owned(), line, column })
+      tokens.push({
+        kind: TkIdent,
+        text: text[start:index].to_owned(),
+        line,
+        column,
+      })
       continue
     }
     if @ascii.ascii_is_digit(c) {
@@ -98,7 +109,10 @@ pub fn tokenize(text : String) -> Array[Token] raise QueryError {
         }
       }
       if index < n &&
-        (@ascii.code_unit_is(cu[index], 'e') || @ascii.code_unit_is(cu[index], 'E')) {
+        (
+          @ascii.code_unit_is(cu[index], 'e') ||
+          @ascii.code_unit_is(cu[index], 'E')
+        ) {
         let mark = index
         index += 1
         if index < n && @ascii.ascii_is_sign(cu[index]) {
@@ -112,7 +126,12 @@ pub fn tokenize(text : String) -> Array[Token] raise QueryError {
           index = mark
         }
       }
-      tokens.push({ kind: TkNumber, text: text[start:index].to_owned(), line, column })
+      tokens.push({
+        kind: TkNumber,
+        text: text[start:index].to_owned(),
+        line,
+        column,
+      })
       continue
     }
     if @ascii.code_unit_is(c, '"') || @ascii.code_unit_is(c, '\'') {
@@ -152,33 +171,46 @@ pub fn tokenize(text : String) -> Array[Token] raise QueryError {
       }
       if !closed {
         raise QueryError(
-          "line " + line.to_string() + ", column " + column.to_string() + ": unterminated text",
+          "line " +
+          line.to_string() +
+          ", column " +
+          column.to_string() +
+          ": unterminated text",
         )
       }
-      tokens.push({ kind: TkText, text: out.to_string(), line, column })
+      tokens.push({ kind: TkText, text: out.to_string(), line, column, })
       index = scan
       continue
     }
     let pair = if index + 1 < n { text[index:index + 2].to_owned() } else { "" }
     if is_two_char_symbol(pair) {
-      tokens.push({ kind: TkSymbol, text: pair, line, column })
+      tokens.push({ kind: TkSymbol, text: pair, line, column, })
       index += 2
       continue
     }
     match c.to_int().to_char() {
       Some(ch) =>
         if is_one_char_symbol(ch) {
-          tokens.push({ kind: TkSymbol, text: text[index:index + 1].to_owned(), line, column })
+          tokens.push({
+            kind: TkSymbol,
+            text: text[index:index + 1].to_owned(),
+            line,
+            column,
+          })
           index += 1
           continue
         }
       None => ()
     }
     raise QueryError(
-      "line " + line.to_string() + ", column " + column.to_string() + ": unexpected character",
+      "line " +
+      line.to_string() +
+      ", column " +
+      column.to_string() +
+      ": unexpected character",
     )
   }
-  tokens.push({ kind: TkEnd, text: "", line, column: index - line_start })
+  tokens.push({ kind: TkEnd, text: "", line, column: index - line_start, })
   tokens
 }
 
@@ -193,8 +225,21 @@ fn is_two_char_symbol(pair : String) -> Bool {
 ///|
 fn is_one_char_symbol(c : Char) -> Bool {
   match c {
-    '|' | ',' | '(' | ')' | '[' | ']' | '=' | '<' | '>' | '!' | '+' | '-' | '*' | '/' | '%' =>
-      true
+    '|'
+    | ','
+    | '('
+    | ')'
+    | '['
+    | ']'
+    | '='
+    | '<'
+    | '>'
+    | '!'
+    | '+'
+    | '-'
+    | '*'
+    | '/'
+    | '%' => true
     _ => false
   }
 }

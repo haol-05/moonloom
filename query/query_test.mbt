@@ -41,7 +41,8 @@ test "query: a pipeline may start without a source and without a pipe" {
 
 ///|
 test "query: comparison, logic and unary operators" {
-  let query = match @query.Query::parse("where not (a >= 2 and b < 3) or c != \"x\"") {
+  let query = match
+    @query.Query::parse("where not (a >= 2 and b < 3) or c != \"x\"") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -98,7 +99,10 @@ test "query: arithmetic binds tighter than comparison" {
 
 ///|
 test "query: text predicates and lists" {
-  let query = match @query.Query::parse("where msg contains \"timeout\" and level in [\"warn\", \"error\"]") {
+  let query = match
+    @query.Query::parse(
+      "where msg contains \"timeout\" and level in [\"warn\", \"error\"]",
+    ) {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -109,7 +113,14 @@ test "query: text predicates and lists" {
     @query.Where(expr) =>
       match expr {
         @query.Binary(@query.And, left, right) => {
-          assert_eq(left, @query.Binary(@query.Contains, @query.Field("msg"), @query.LitStr("timeout")))
+          assert_eq(
+            left,
+            @query.Binary(
+              @query.Contains,
+              @query.Field("msg"),
+              @query.LitStr("timeout"),
+            ),
+          )
           assert_eq(
             right,
             @query.Binary(
@@ -136,7 +147,10 @@ test "query: is null and is not null" {
   }
   match missing.stages[0] {
     @query.Where(expr) =>
-      assert_eq(expr, @query.Binary(@query.Eq, @query.Field("user"), @query.LitNull))
+      assert_eq(
+        expr,
+        @query.Binary(@query.Eq, @query.Field("user"), @query.LitNull),
+      )
     _ => fail("expected a where stage")
   }
   let present = match @query.Query::parse("where user is not null") {
@@ -148,14 +162,18 @@ test "query: is null and is not null" {
   }
   match present.stages[0] {
     @query.Where(expr) =>
-      assert_eq(expr, @query.Binary(@query.Ne, @query.Field("user"), @query.LitNull))
+      assert_eq(
+        expr,
+        @query.Binary(@query.Ne, @query.Field("user"), @query.LitNull),
+      )
     _ => fail("expected a where stage")
   }
 }
 
 ///|
 test "query: nested field names survive the lexer" {
-  let query = match @query.Query::parse("where http.status >= 500 and tags.0 == \"a\"") {
+  let query = match
+    @query.Query::parse("where http.status >= 500 and tags.0 == \"a\"") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -164,8 +182,18 @@ test "query: nested field names survive the lexer" {
   }
   match query.stages[0] {
     @query.Where(@query.Binary(@query.And, left, right)) => {
-      assert_eq(left, @query.Binary(@query.Ge, @query.Field("http.status"), @query.LitInt(500L)))
-      assert_eq(right, @query.Binary(@query.Eq, @query.Field("tags.0"), @query.LitStr("a")))
+      assert_eq(
+        left,
+        @query.Binary(
+          @query.Ge,
+          @query.Field("http.status"),
+          @query.LitInt(500L),
+        ),
+      )
+      assert_eq(
+        right,
+        @query.Binary(@query.Eq, @query.Field("tags.0"), @query.LitStr("a")),
+      )
     }
     _ => fail("expected a where stage")
   }
@@ -173,7 +201,10 @@ test "query: nested field names survive the lexer" {
 
 ///|
 test "query: aggregate aliases are generated when absent" {
-  let query = match @query.Query::parse("stats count(), sum(bytes), count_distinct(user), percentile(duration, 95)") {
+  let query = match
+    @query.Query::parse(
+      "stats count(), sum(bytes), count_distinct(user), percentile(duration, 95)",
+    ) {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -194,7 +225,10 @@ test "query: aggregate aliases are generated when absent" {
 
 ///|
 test "query: grouping and multi key ordering" {
-  let query = match @query.Query::parse("stats count() as n by service, level | sort n desc, service asc") {
+  let query = match
+    @query.Query::parse(
+      "stats count() as n by service, level | sort n desc, service asc",
+    ) {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -217,7 +251,10 @@ test "query: grouping and multi key ordering" {
 
 ///|
 test "query: top, dedup, eval and parse stages" {
-  let query = match @query.Query::parse("eval ms = duration * 1000 | top 3 by ms desc | dedup user") {
+  let query = match
+    @query.Query::parse(
+      "eval ms = duration * 1000 | top 3 by ms desc | dedup user",
+    ) {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -227,7 +264,14 @@ test "query: top, dedup, eval and parse stages" {
   match query.stages[0] {
     @query.Eval(name, expr) => {
       assert_eq(name, "ms")
-      assert_eq(expr, @query.Binary(@query.Mul, @query.Field("duration"), @query.LitInt(1000L)))
+      assert_eq(
+        expr,
+        @query.Binary(
+          @query.Mul,
+          @query.Field("duration"),
+          @query.LitInt(1000L),
+        ),
+      )
     }
     _ => fail("expected an eval stage")
   }
@@ -258,7 +302,8 @@ test "query: top, dedup, eval and parse stages" {
 
 ///|
 test "query: comments and flexible spacing are ignored" {
-  let query = match @query.Query::parse("// look at errors\nwhere   level=='error'   |limit 10") {
+  let query = match
+    @query.Query::parse("// look at errors\nwhere   level=='error'   |limit 10") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -268,7 +313,10 @@ test "query: comments and flexible spacing are ignored" {
   assert_eq(query.stages.length(), 2)
   match query.stages[0] {
     @query.Where(expr) =>
-      assert_eq(expr, @query.Binary(@query.Eq, @query.Field("level"), @query.LitStr("error")))
+      assert_eq(
+        expr,
+        @query.Binary(@query.Eq, @query.Field("level"), @query.LitStr("error")),
+      )
     _ => fail("expected a where stage")
   }
 }
@@ -278,7 +326,10 @@ test "query: mistakes are reported with a position" {
   let unknown = @query.Query::parse("where a > 1 | explode")
   assert_true(unknown is Err(_))
   match unknown {
-    Err(message) => assert_true(message.contains("unknown stage") && message.contains("column"))
+    Err(message) =>
+      assert_true(
+        message.contains("unknown stage") && message.contains("column"),
+      )
     Ok(_) => fail("expected an error")
   }
   let no_pipe = @query.Query::parse("where a > 1 limit 2")
@@ -302,7 +353,8 @@ test "query: mistakes are reported with a position" {
 
 ///|
 test "lexer: text literals understand escapes and both quote styles" {
-  let query = match @query.Query::parse("where a == 'it\\'s' and b == \"x\\ty\"") {
+  let query = match
+    @query.Query::parse("where a == 'it\\'s' and b == \"x\\ty\"") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -311,8 +363,14 @@ test "lexer: text literals understand escapes and both quote styles" {
   }
   match query.stages[0] {
     @query.Where(@query.Binary(@query.And, left, right)) => {
-      assert_eq(left, @query.Binary(@query.Eq, @query.Field("a"), @query.LitStr("it's")))
-      assert_eq(right, @query.Binary(@query.Eq, @query.Field("b"), @query.LitStr("x\ty")))
+      assert_eq(
+        left,
+        @query.Binary(@query.Eq, @query.Field("a"), @query.LitStr("it's")),
+      )
+      assert_eq(
+        right,
+        @query.Binary(@query.Eq, @query.Field("b"), @query.LitStr("x\ty")),
+      )
     }
     _ => fail("expected a where stage")
   }
@@ -320,7 +378,8 @@ test "lexer: text literals understand escapes and both quote styles" {
 
 ///|
 test "lexer: numbers keep their kind" {
-  let query = match @query.Query::parse("where a == 42 and b == 2.5 and c == 1e3") {
+  let query = match
+    @query.Query::parse("where a == 42 and b == 2.5 and c == 1e3") {
     Ok(q) => q
     Err(message) => {
       fail(message)
@@ -331,13 +390,26 @@ test "lexer: numbers keep their kind" {
     @query.Where(expr) =>
       match expr {
         @query.Binary(@query.And, left, right) => {
-          assert_eq(right, @query.Binary(@query.Eq, @query.Field("c"), @query.LitNum(1000.0)))
+          assert_eq(
+            right,
+            @query.Binary(@query.Eq, @query.Field("c"), @query.LitNum(1000.0)),
+          )
           match left {
             @query.Binary(@query.And, first, second) => {
-              assert_eq(first, @query.Binary(@query.Eq, @query.Field("a"), @query.LitInt(42L)))
-              assert_eq(second, @query.Binary(@query.Eq, @query.Field("b"), @query.LitNum(2.5)))
+              assert_eq(
+                first,
+                @query.Binary(@query.Eq, @query.Field("a"), @query.LitInt(42L)),
+              )
+              assert_eq(
+                second,
+                @query.Binary(@query.Eq, @query.Field("b"), @query.LitNum(2.5)),
+              )
             }
-            _ => fail("expected a nested and on the left: " + left.to_repr().to_string())
+            _ =>
+              fail(
+                "expected a nested and on the left: " +
+                left.to_repr().to_string(),
+              )
           }
         }
         _ => fail("expected an and expression")
@@ -348,7 +420,8 @@ test "lexer: numbers keep their kind" {
 
 ///|
 test "query: function calls inside expressions" {
-  let query = match @query.Query::parse("where lower(service) == \"api\" and len(msg) > 10") {
+  let query = match
+    @query.Query::parse("where lower(service) == \"api\" and len(msg) > 10") {
     Ok(q) => q
     Err(message) => {
       fail(message)

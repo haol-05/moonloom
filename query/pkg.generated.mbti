@@ -1,0 +1,161 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/query"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn default_alias(AggFunc, Expr?, Expr?) -> String
+
+pub fn parse_query(String) -> Query raise QueryError
+
+pub fn tokenize(String) -> Array[Token] raise QueryError
+
+// Errors
+pub suberror QueryError {
+  QueryError(String)
+}
+
+// Types and methods
+pub(all) enum AggFunc {
+  Count
+  CountDistinct
+  Sum
+  Avg
+  Min
+  Max
+  Percentile
+  Stddev
+  First
+  Last
+} derive(Eq, @debug.Debug)
+pub fn AggFunc::equal(Self, Self) -> Bool
+pub fn AggFunc::from_name(String) -> Self?
+pub fn AggFunc::name(Self) -> String
+pub fn AggFunc::not_equal(Self, Self) -> Bool
+pub fn AggFunc::to_repr(Self) -> @debug.Repr
+
+pub(all) struct AggSpec {
+  func : AggFunc
+  arg : Expr?
+  extra : Expr?
+  label : String
+} derive(Eq, @debug.Debug)
+pub fn AggSpec::equal(Self, Self) -> Bool
+pub fn AggSpec::not_equal(Self, Self) -> Bool
+pub fn AggSpec::render(Self) -> String
+pub fn AggSpec::to_repr(Self) -> @debug.Repr
+
+pub(all) enum BinOp {
+  Add
+  Sub
+  Mul
+  Div
+  Mod
+  Eq
+  Ne
+  Lt
+  Le
+  Gt
+  Ge
+  And
+  Or
+  Match
+  NotMatch
+  Contains
+  StartsWith
+  EndsWith
+  In
+} derive(Eq, @debug.Debug)
+pub fn BinOp::equal(Self, Self) -> Bool
+pub fn BinOp::not_equal(Self, Self) -> Bool
+pub fn BinOp::symbol(Self) -> String
+pub fn BinOp::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Expr {
+  LitInt(Int64)
+  LitNum(Double)
+  LitStr(String)
+  LitBool(Bool)
+  LitNull
+  Field(String)
+  Unary(UnOp, Expr)
+  Binary(BinOp, Expr, Expr)
+  Call(String, Array[Expr])
+  List(Array[Expr])
+} derive(Eq, @debug.Debug)
+pub fn Expr::equal(Self, Self) -> Bool
+pub fn Expr::not_equal(Self, Self) -> Bool
+pub fn Expr::render(Self) -> String
+pub fn Expr::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Query {
+  source : String?
+  stages : Array[Stage]
+  text : String
+} derive(Eq, @debug.Debug)
+pub fn Query::equal(Self, Self) -> Bool
+pub fn Query::first_filter(Self) -> Expr?
+pub fn Query::new(String?, Array[Stage], String) -> Self
+pub fn Query::not_equal(Self, Self) -> Bool
+pub fn Query::parse(String) -> Result[Self, String]
+pub fn Query::stats_stage(Self) -> (Array[AggSpec], Array[String])?
+pub fn Query::to_repr(Self) -> @debug.Repr
+
+pub(all) struct SortKey {
+  expr : Expr
+  desc : Bool
+} derive(Eq, @debug.Debug)
+pub fn SortKey::equal(Self, Self) -> Bool
+pub fn SortKey::not_equal(Self, Self) -> Bool
+pub fn SortKey::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Stage {
+  Where(Expr)
+  Fields(Array[String])
+  Eval(String, Expr)
+  Parse(String)
+  Stats(Array[AggSpec], Array[String])
+  Sort(Array[SortKey])
+  Limit(Int)
+  Top(Int, Array[SortKey])
+  Dedup(Array[String])
+} derive(Eq, @debug.Debug)
+pub fn Stage::equal(Self, Self) -> Bool
+pub fn Stage::keyword(Self) -> String
+pub fn Stage::not_equal(Self, Self) -> Bool
+pub fn Stage::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Token {
+  kind : TokenKind
+  text : String
+  line : Int
+  column : Int
+} derive(Eq, @debug.Debug)
+pub fn Token::equal(Self, Self) -> Bool
+pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::to_repr(Self) -> @debug.Repr
+
+pub(all) enum TokenKind {
+  TkIdent
+  TkNumber
+  TkText
+  TkSymbol
+  TkEnd
+} derive(Eq, @debug.Debug)
+pub fn TokenKind::equal(Self, Self) -> Bool
+pub fn TokenKind::not_equal(Self, Self) -> Bool
+pub fn TokenKind::to_repr(Self) -> @debug.Repr
+
+pub(all) enum UnOp {
+  Neg
+  Not
+} derive(Eq, @debug.Debug)
+pub fn UnOp::equal(Self, Self) -> Bool
+pub fn UnOp::not_equal(Self, Self) -> Bool
+pub fn UnOp::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

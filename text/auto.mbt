@@ -74,7 +74,7 @@ pub fn detect_format(text : String) -> String {
     let open = trimmed.find("[")
     match open {
       Some(at) =>
-        if at > 0 && (trimmed[at:].to_owned().contains("]")) {
+        if at > 0 && trimmed[at:].to_owned().contains("]") {
           let inside = trimmed[at + 1:].to_owned()
           match inside.find("]") {
             Some(end) =>
@@ -144,6 +144,15 @@ fn looks_like_logfmt(line : String) -> Bool {
     }
   }
   tokens > 0 && pairs * 2 >= tokens
+}
+
+///|
+/// The names a caller can pass as an input format, including `auto`.
+pub fn known_input_formats() -> Array[String] {
+  [
+    "auto", "csv", "tsv", "json", "jsonl", "logfmt", "keyvalue", "access", "syslog",
+    "lines",
+  ]
 }
 
 ///|

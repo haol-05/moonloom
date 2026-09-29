@@ -51,8 +51,14 @@ test "exec: numeric comparisons work across int and float" {
 
 ///|
 test "exec: and, or and not combine predicates" {
-  assert_eq(rows_of("where level == \"error\" and service == \"api\"").length(), 1)
-  assert_eq(rows_of("where service == \"api\" or service == \"db\"").length(), 3)
+  assert_eq(
+    rows_of("where level == \"error\" and service == \"api\"").length(),
+    1,
+  )
+  assert_eq(
+    rows_of("where service == \"api\" or service == \"db\"").length(),
+    3,
+  )
   assert_eq(rows_of("where not (level == \"error\")").length(), 2)
 }
 
@@ -99,7 +105,10 @@ test "exec: scalar functions" {
   assert_eq(rows_of("where lower(service) == \"api\"").length(), 2)
   assert_eq(rows_of("where upper(service) == \"WEB\"").length(), 2)
   assert_eq(rows_of("where len(user) == 3").length(), 2)
-  assert_eq(rows_of("where concat(service, \"/\", level) == \"api/error\"").length(), 1)
+  assert_eq(
+    rows_of("where concat(service, \"/\", level) == \"api/error\"").length(),
+    1,
+  )
   assert_eq(rows_of("where substr(service, 0, 1) == \"a\"").length(), 2)
   assert_eq(rows_of("where coalesce(missing, user) == \"alice\"").length(), 2)
   assert_eq(rows_of("where if(level == \"error\", 1, 0) == 1").length(), 3)
@@ -114,7 +123,9 @@ test "exec: scalar functions" {
 
 ///|
 test "exec: stats counts and aggregates" {
-  let result = run("stats count() as n, sum(duration) as total, avg(duration) as mean")
+  let result = run(
+    "stats count() as n, sum(duration) as total, avg(duration) as mean",
+  )
   assert_eq(result.length(), 1)
   assert_eq(result.value(0, "n"), @moonloom.Int(5L))
   assert_eq(result.value(0, "total"), @moonloom.Int(137L))
@@ -135,7 +146,9 @@ test "exec: stats groups and orders the groups by key" {
 
 ///|
 test "exec: min, max and count_distinct" {
-  let result = run("stats min(duration) as lo, max(duration) as hi, count_distinct(user) as people")
+  let result = run(
+    "stats min(duration) as lo, max(duration) as hi, count_distinct(user) as people",
+  )
   assert_eq(result.value(0, "lo"), @moonloom.Num(1.5))
   assert_eq(result.value(0, "hi"), @moonloom.Int(100L))
   assert_eq(result.value(0, "people"), @moonloom.Int(3L))
@@ -143,7 +156,9 @@ test "exec: min, max and count_distinct" {
 
 ///|
 test "exec: percentile uses the nearest rank" {
-  let result = run("stats percentile(duration, 50) as p50, percentile(duration, 100) as p100")
+  let result = run(
+    "stats percentile(duration, 50) as p50, percentile(duration, 100) as p100",
+  )
   assert_eq(result.value(0, "p50"), @moonloom.Num(12.5))
   assert_eq(result.value(0, "p100"), @moonloom.Int(100L))
 }
@@ -205,7 +220,8 @@ test "exec: fields projects and reorders" {
 ///|
 test "exec: parse extracts fields from the source line" {
   let log = "2024-01-02T03:04:05Z error api: upstream timeout\n2024-01-02T03:04:06Z info web: ok\n"
-  match @exec.query_text(
+  match
+    @exec.query_text(
       log,
       "parse \"{time} {level} {service}: {message}\" | where level == \"error\"",
       format="lines",
@@ -224,10 +240,8 @@ test "exec: the index changes the plan but never the answer" {
   let table = table()
   let index = @index.TableIndex::build(table)
   let queries = [
-    "where level == \"error\"",
-    "where service == \"web\" and level == \"info\"",
-    "where level == \"error\" | stats count() as n by service | sort n desc",
-    "where service == \"nope\"",
+    "where level == \"error\"", "where service == \"web\" and level == \"info\"",
+    "where level == \"error\" | stats count() as n by service | sort n desc", "where service == \"nope\"",
   ]
   for text in queries {
     let plain = match @exec.run_text(text, table, None) {
@@ -264,7 +278,8 @@ test "exec: stats can be read through the whole pipeline" {
 ///|
 test "exec: query_text reads the format it is given" {
   let logfmt = "level=error service=api dur=12\nlevel=info service=web dur=3\n"
-  match @exec.query_text(logfmt, "stats count() as n by level | sort level asc") {
+  match
+    @exec.query_text(logfmt, "stats count() as n by level | sort level asc") {
     Ok(result) => {
       assert_eq(result.length(), 2)
       assert_eq(result.value(0, "level"), @moonloom.Str("error"))

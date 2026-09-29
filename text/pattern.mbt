@@ -92,7 +92,7 @@ pub fn Pattern::compile(source : String) -> Pattern? {
   if parts.length() == 0 {
     return None
   }
-  Some({ parts, source })
+  Some({ parts, source, })
 }
 
 ///|
@@ -149,12 +149,11 @@ pub fn Pattern::capture(self : Pattern, line : String) -> @moonloom.Record? {
   let mut index = 0
   while index < parts.length() {
     match parts[index] {
-      Literal(text) => {
+      Literal(text) =>
         match find_from(line, text, position) {
           Some(at) => position = at + text.code_units().length()
           None => return None
         }
-      }
       Field(name) => {
         let rest_is_field = index + 1 < parts.length() &&
           (match parts[index + 1] {
@@ -170,7 +169,7 @@ pub fn Pattern::capture(self : Pattern, line : String) -> @moonloom.Record? {
           position = line.code_units().length()
         } else {
           match parts[index + 1] {
-            Literal(next) => {
+            Literal(next) =>
               match find_from(line, next, position) {
                 Some(at) => {
                   let captured = line[position:at].to_owned()
@@ -181,7 +180,6 @@ pub fn Pattern::capture(self : Pattern, line : String) -> @moonloom.Record? {
                 }
                 None => return None
               }
-            }
             Field(_) => return None
           }
         }
@@ -208,7 +206,11 @@ pub fn parse_pattern(
     Some(p) => p
     None => {
       dataset.skip(
-        @moonloom.Diagnostic::new("bad-pattern", 0, "pattern '" + pattern + "' is not valid"),
+        @moonloom.Diagnostic::new(
+          "bad-pattern",
+          0,
+          "pattern '" + pattern + "' is not valid",
+        ),
       )
       return dataset
     }
@@ -234,9 +236,7 @@ pub fn parse_pattern(
       None =>
         dataset.skip(
           @moonloom.Diagnostic::new(
-            "no-match",
-            line_number,
-            "line does not match the pattern",
+            "no-match", line_number, "line does not match the pattern",
           ),
         )
     }

@@ -91,7 +91,7 @@ fn scan_rows(
     }
     match next {
       None => finished = true
-      Some(ch) => {
+      Some(ch) =>
         if in_quotes {
           if ch == quote {
             match iter.next() {
@@ -119,10 +119,7 @@ fn scan_rows(
         } else if ch == '\n' || ch == '\r' {
           if ch == '\r' {
             match iter.next() {
-              Some(after) =>
-                if after != '\n' {
-                  pending = Some(after)
-                }
+              Some(after) => if after != '\n' { pending = Some(after) }
               None => ()
             }
           }
@@ -140,7 +137,6 @@ fn scan_rows(
           at_field_start = false
           row_started = true
         }
-      }
     }
   }
   if row_started || !field.is_empty() || row.length() > 0 {
@@ -183,7 +179,13 @@ pub fn parse_csv(
   if with_header {
     for cell in rows[0] {
       let name = cell.trim().to_owned()
-      columns.push(if name == "" { "c" + (columns.length() + 1).to_string() } else { name })
+      columns.push(
+        if name == "" {
+          "c" + (columns.length() + 1).to_string()
+        } else {
+          name
+        },
+      )
     }
     start = 1
   } else {
@@ -197,7 +199,10 @@ pub fn parse_csv(
     if cells.length() == 1 && cells[0].trim().length() == 0 {
       continue
     }
-    let record = @moonloom.Record::empty(row_index + 1, cells.join(delim.to_string()))
+    let record = @moonloom.Record::empty(
+      row_index + 1,
+      cells.join(delim.to_string()),
+    )
     for index = 0; index < cells.length(); index = index + 1 {
       let name = if index < columns.length() {
         columns[index]
@@ -234,6 +239,10 @@ fn widest_row(rows : Array[Array[String]]) -> Int {
 
 ///|
 /// Tab separated text is the same reader with a fixed delimiter.
-pub fn parse_tsv(text : String, header? : Bool, max_records? : Int) -> @moonloom.Dataset {
-  parse_csv(text, delimiter='\t', header?=header, max_records?=max_records)
+pub fn parse_tsv(
+  text : String,
+  header? : Bool,
+  max_records? : Int,
+) -> @moonloom.Dataset {
+  parse_csv(text, delimiter='\t', header?, max_records?)
 }

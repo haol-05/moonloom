@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/exec"
+
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/query",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/string",
+}
+
+// Values
+pub fn character_length(String) -> Int
+
+pub fn eval(Env, @query.Expr, Array[@moonloom.Value]) -> @moonloom.Value
+
+pub fn query_text(String, String, format? : String, index? : Bool) -> Result[ResultSet, String]
+
+pub fn read_field(Env, Array[@moonloom.Value], String) -> @moonloom.Value
+
+pub fn run(@query.Query, @moonloom.Table, @index.TableIndex?) -> ResultSet
+
+pub fn run_text(String, @moonloom.Table, @index.TableIndex?) -> Result[ResultSet, String]
+
+// Errors
+
+// Types and methods
+pub(all) struct Env {
+  positions : Map[String, Int]
+  patterns : Map[String, @string.Regex]
+}
+pub fn Env::for_columns(Array[String]) -> Self
+
+pub(all) struct ExecStats {
+  rows_in : Int
+  scanned : Int
+  filtered_out : Int
+  groups : Int
+  rows_out : Int
+  index_used : Bool
+  pruned : Int
+} derive(@debug.Debug)
+pub fn ExecStats::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ResultSet {
+  columns : Array[String]
+  rows : Array[Array[@moonloom.Value]]
+  stats : ExecStats
+} derive(@debug.Debug)
+pub fn ResultSet::column_index(Self, String) -> Int?
+pub fn ResultSet::is_empty(Self) -> Bool
+pub fn ResultSet::length(Self) -> Int
+pub fn ResultSet::to_repr(Self) -> @debug.Repr
+pub fn ResultSet::value(Self, Int, String) -> @moonloom.Value
+
+// Type aliases
+
+// Traits

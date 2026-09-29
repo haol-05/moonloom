@@ -2,7 +2,7 @@
 // other package. Only toolchain packages are imported, so the model layer stays
 // free of third-party dependencies.
 import {
-  "haol-05/moonloom/ascii" @ascii,
+  "haol-05/moonloom/ascii",
   "moonbitlang/core/debug",
   "moonbitlang/core/string",
 }

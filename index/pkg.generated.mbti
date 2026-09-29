@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/index"
+
+import {
+  "haol-05/moonloom",
+  "haol-05/moonloom/query",
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct CandidateSet {
+  rows : Array[Int]
+  predicates : Array[String]
+  total : Int
+} derive(Eq, @debug.Debug)
+pub fn CandidateSet::equal(Self, Self) -> Bool
+pub fn CandidateSet::keep_ratio(Self) -> Double
+pub fn CandidateSet::length(Self) -> Int
+pub fn CandidateSet::not_equal(Self, Self) -> Bool
+pub fn CandidateSet::pruned(Self) -> Int
+pub fn CandidateSet::to_repr(Self) -> @debug.Repr
+
+pub(all) struct FieldIndex {
+  field : String
+  postings : Map[String, Array[Int]]
+  entries : Int
+} derive(@debug.Debug)
+pub fn FieldIndex::entries(Self) -> Int
+pub fn FieldIndex::to_repr(Self) -> @debug.Repr
+
+pub(all) struct TableIndex {
+  fields : Map[String, FieldIndex]
+  order : Array[String]
+  rows : Int
+} derive(@debug.Debug)
+pub fn TableIndex::build(@moonloom.Table, fields? : Array[String], max_entries? : Int) -> Self
+pub fn TableIndex::candidates(Self, @query.Expr) -> CandidateSet?
+pub fn TableIndex::entries(Self) -> Int
+pub fn TableIndex::indexed_fields(Self) -> Array[String]
+pub fn TableIndex::is_empty(Self) -> Bool
+pub fn TableIndex::lookup(Self, String, String) -> Array[Int]?
+pub fn TableIndex::lookup_value(Self, String, @moonloom.Value) -> Array[Int]?
+pub fn TableIndex::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

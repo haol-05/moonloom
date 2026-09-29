@@ -21,9 +21,9 @@ pub fn parse_pairs_line(line : String, source_line? : Int) -> @moonloom.Record? 
     }
     let key_start = index
     while index < n &&
-      !@ascii.code_unit_is(cu[index], '=') &&
-      !@ascii.code_unit_is(cu[index], ' ') &&
-      !@ascii.code_unit_is(cu[index], '\t') {
+          !@ascii.code_unit_is(cu[index], '=') &&
+          !@ascii.code_unit_is(cu[index], ' ') &&
+          !@ascii.code_unit_is(cu[index], '\t') {
       index += 1
     }
     if index == key_start {
@@ -50,8 +50,8 @@ pub fn parse_pairs_line(line : String, source_line? : Int) -> @moonloom.Record? 
       } else {
         let value_start = index
         while index < n &&
-          !@ascii.code_unit_is(cu[index], ' ') &&
-          !@ascii.code_unit_is(cu[index], '\t') {
+              !@ascii.code_unit_is(cu[index], ' ') &&
+              !@ascii.code_unit_is(cu[index], '\t') {
           index += 1
         }
         line[value_start:index].to_owned()
@@ -93,9 +93,7 @@ pub fn parse_logfmt(text : String, max_records? : Int) -> @moonloom.Dataset {
       None =>
         dataset.skip(
           @moonloom.Diagnostic::new(
-            "no-pairs",
-            line_number,
-            "line holds no key=value pair",
+            "no-pairs", line_number, "line holds no key=value pair",
           ),
         )
     }
@@ -163,7 +161,9 @@ pub fn parse_keyvalue(
     let value = strip_comment(raw_value)
     if key == "" {
       dataset.skip(
-        @moonloom.Diagnostic::new("empty-key", line_number, "line has an empty key"),
+        @moonloom.Diagnostic::new(
+          "empty-key", line_number, "line has an empty key",
+        ),
       )
       continue
     }

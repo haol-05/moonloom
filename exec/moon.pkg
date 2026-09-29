@@ -1,10 +1,10 @@
 // Execution: operators, aggregation and the entry points that run a plan.
 import {
-  "haol-05/moonloom" @moonloom,
-  "haol-05/moonloom/index" @index,
-  "haol-05/moonloom/plan" @plan,
-  "haol-05/moonloom/query" @query,
-  "haol-05/moonloom/text" @text,
+  "haol-05/moonloom",
+  "haol-05/moonloom/index",
+  "haol-05/moonloom/plan",
+  "haol-05/moonloom/query",
+  "haol-05/moonloom/text",
   "moonbitlang/core/debug",
   "moonbitlang/core/math",
   "moonbitlang/core/string",

@@ -17,8 +17,12 @@ pub extend Diagnostic with Eq::{not_equal, equal}
 pub extend Diagnostic with @debug.Debug::{to_repr}
 
 ///|
-pub fn Diagnostic::new(code : String, line : Int, message : String) -> Diagnostic {
-  { code, line, message }
+pub fn Diagnostic::new(
+  code : String,
+  line : Int,
+  message : String,
+) -> Diagnostic {
+  { code, line, message, }
 }
 
 ///|
@@ -37,7 +41,7 @@ pub extend Record with @debug.Debug::{to_repr}
 
 ///|
 pub fn Record::empty(source_line : Int, raw : String) -> Record {
-  { fields: Map([]), order: [], source_line, raw }
+  { fields: Map([]), order: [], source_line, raw, }
 }
 
 ///|
@@ -67,7 +71,11 @@ pub fn Record::set(self : Record, name : String, value : Value) -> Unit {
 ///|
 /// Stores a value only when the name is not present yet, which is how a parser
 /// keeps the first occurrence of a repeated key.
-pub fn Record::set_if_absent(self : Record, name : String, value : Value) -> Unit {
+pub fn Record::set_if_absent(
+  self : Record,
+  name : String,
+  value : Value,
+) -> Unit {
   if !self.fields.contains(name) {
     self.set(name, value)
   }
@@ -112,12 +120,15 @@ pub extend Table with @debug.Debug::{to_repr}
 
 ///|
 pub fn Table::empty() -> Table {
-  { columns: [], records: [], diagnostics: [] }
+  { columns: [], records: [], diagnostics: [], }
 }
 
 ///|
-pub fn Table::of_records(columns : Array[String], records : Array[Record]) -> Table {
-  let table : Table = { columns: [], records, diagnostics: [] }
+pub fn Table::of_records(
+  columns : Array[String],
+  records : Array[Record],
+) -> Table {
+  let table : Table = { columns: [], records, diagnostics: [], }
   for name in columns {
     table.add_column(name)
   }
@@ -180,7 +191,7 @@ pub extend Dataset with @debug.Debug::{to_repr}
 
 ///|
 pub fn Dataset::empty(format : String) -> Dataset {
-  { table: Table::empty(), format, lines_read: 0, skipped: 0 }
+  { table: Table::empty(), format, lines_read: 0, skipped: 0, }
 }
 
 ///|

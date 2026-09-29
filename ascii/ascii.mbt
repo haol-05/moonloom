@@ -43,7 +43,10 @@ pub fn ascii_is_alnum(cu : UInt16) -> Bool {
 /// Whitespace as a text format understands it: space, tab, carriage return and
 /// line feed. Vertical tab and form feed are deliberately excluded.
 pub fn ascii_is_space(cu : UInt16) -> Bool {
-  code_unit_is(cu, ' ') || code_unit_is(cu, '\t') || code_unit_is(cu, '\r') || code_unit_is(cu, '\n')
+  code_unit_is(cu, ' ') ||
+  code_unit_is(cu, '\t') ||
+  code_unit_is(cu, '\r') ||
+  code_unit_is(cu, '\n')
 }
 
 ///|

@@ -234,7 +234,8 @@ fn parse_iso_like(cu : ArrayView[UInt16], n : Int) -> Int64? {
           let (hour, minute, second, milli, next) = clock
           let mut offset = 0L
           if next < n {
-            if @ascii.code_unit_is(cu[next], 'Z') || @ascii.code_unit_is(cu[next], 'z') {
+            if @ascii.code_unit_is(cu[next], 'Z') ||
+              @ascii.code_unit_is(cu[next], 'z') {
               offset = 0L
             } else {
               match parse_offset_minutes(cu, next) {
@@ -254,7 +255,9 @@ fn parse_iso_like(cu : ArrayView[UInt16], n : Int) -> Int64? {
 
 ///|
 fn parse_clf_like(cu : ArrayView[UInt16], t : StringView, n : Int) -> Int64? {
-  if n < 19 || !@ascii.code_unit_is(cu[2], '/') || !@ascii.code_unit_is(cu[6], '/') {
+  if n < 19 ||
+    !@ascii.code_unit_is(cu[2], '/') ||
+    !@ascii.code_unit_is(cu[6], '/') {
     return None
   }
   let day = digits_at(cu, 0, 2)
@@ -324,7 +327,8 @@ fn parse_clock(
   let hour = digits_at(cu, start, 2)
   let minute = digits_at(cu, start + 3, 2)
   let second = digits_at(cu, start + 6, 2)
-  if !@ascii.code_unit_is(cu[start + 2], ':') || !@ascii.code_unit_is(cu[start + 5], ':') {
+  if !@ascii.code_unit_is(cu[start + 2], ':') ||
+    !@ascii.code_unit_is(cu[start + 5], ':') {
     return None
   }
   match (hour, minute, second) {
@@ -338,7 +342,9 @@ fn parse_clock(
         let mut digits = 0
         let mut value = 0L
         let mut index = next + 1
-        while index < cu.length() && @ascii.ascii_is_digit(cu[index]) && digits < 3 {
+        while index < cu.length() &&
+              @ascii.ascii_is_digit(cu[index]) &&
+              digits < 3 {
           value = value * 10L + (cu[index].to_int() - 48).to_int64()
           digits += 1
           index += 1

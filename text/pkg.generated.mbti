@@ -1,0 +1,95 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "haol-05/moonloom/text"
+
+import {
+  "haol-05/moonloom",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn detect_delimiter(String) -> Char
+
+pub fn detect_format(String) -> String
+
+pub fn find_from(String, String, Int) -> Int?
+
+pub fn format_duration(Int64) -> String
+
+pub fn format_timestamp(Int64) -> String
+
+pub fn is_blank(String) -> Bool
+
+pub fn known_input_formats() -> Array[String]
+
+pub fn parse_access_line(String, source_line? : Int) -> @moonloom.Record?
+
+pub fn parse_access_log(String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_auto(String, format? : String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_csv(String, delimiter? : Char, header? : Bool, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_duration(StringView) -> Int64?
+
+pub fn parse_json(String, flatten? : Bool, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_jsonl(String, flatten? : Bool, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_keyvalue(String, separator? : Char, sections? : Bool, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_lines(String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_logfmt(String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_pairs_line(String, source_line? : Int) -> @moonloom.Record?
+
+pub fn parse_pattern(String, String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_syslog(String, max_records? : Int) -> @moonloom.Dataset
+
+pub fn parse_syslog_line(String, source_line? : Int) -> @moonloom.Record?
+
+pub fn parse_timestamp(StringView) -> Int64?
+
+pub fn parse_tsv(String, header? : Bool, max_records? : Int) -> @moonloom.Dataset
+
+pub fn read_bracketed(String, ArrayView[UInt16], Int) -> (String, Int)?
+
+pub fn read_quoted(ArrayView[UInt16], Int) -> (String, Int)?
+
+pub fn skip_spaces(ArrayView[UInt16], Int) -> Int
+
+pub fn split_lines(String) -> Array[String]
+
+pub fn split_plain(String, Char) -> Array[String]
+
+pub fn strip_bom(String) -> String
+
+pub fn timestamp_value(String) -> @moonloom.Value
+
+pub fn until_char(ArrayView[UInt16], Int, Char) -> Int
+
+// Errors
+
+// Types and methods
+pub(all) struct Pattern {
+  parts : Array[PatternPart]
+  source : String
+} derive(Eq, @debug.Debug)
+pub fn Pattern::capture(Self, String) -> @moonloom.Record?
+pub fn Pattern::compile(String) -> Self?
+pub fn Pattern::equal(Self, Self) -> Bool
+pub fn Pattern::not_equal(Self, Self) -> Bool
+pub fn Pattern::to_repr(Self) -> @debug.Repr
+
+pub(all) enum PatternPart {
+  Literal(String)
+  Field(String)
+} derive(Eq, @debug.Debug)
+pub fn PatternPart::equal(Self, Self) -> Bool
+pub fn PatternPart::not_equal(Self, Self) -> Bool
+pub fn PatternPart::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
